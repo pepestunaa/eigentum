@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string("property");
             $table->string("description");
             $table->string("address");
-            // $table->foreignId('type_id');
             $table->foreignId('developer_id');
             $table->softDeletes();
             $table->timestamps();
