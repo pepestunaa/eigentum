@@ -18,13 +18,14 @@
                     <thead>
                         <tr>
                             <th scope="col">Id</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Password</th>
                             <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            {{-- <th scope="col">Password</th> --}}
                             <th scope="col">Address</th>
                             <th scope="col">Location</th>
                             <th scope="col">Ktp</th>
                             <th scope="col">Phone number</th>
+                            <th scope="col">Property</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -34,14 +35,20 @@
                                 <tr align="center">
                                     <td class=""><?= $loop->iteration ?></td>
                                     {{-- <td class=""><?= $agent->id ?></td> --}}
-                                    <td class="text-start"><?= $agent->email ?></td>
-                                    <td class="text-start"><?= $agent->password ?></td>
                                     <td class="text-start"><?= $agent->name ?></td>
+                                    <td class="text-start"><?= $agent->email ?></td>
+                                    {{-- <td class="text-start"><?= $agent->password ?></td> --}}
                                     <td class="text-start"><?= $agent->address ?></td>
                                     <td class="text-start"><?= $agent->location ?></td>
-                                    <td class="text-start"><?= $agent->ktp ?></td>
+                                    {{-- <td class="text-start"><?= $agent->ktp ?></td> --}}
+                                    <td class="text-start"><img src="{{ asset('storage/' . $agent->ktp) }}"
+                                        width="60" heigth="60"></td>
                                     <td class="text-start"><?= $agent->phone_number ?></td>
-                                    <td class="text-end">
+                                    <td class="text-start">
+                                        @foreach ($agent->properties as $property)
+                                        <span>{{ $property->property }},</span><br>
+                                        @endforeach
+                                    </td>                                    <td class="text-end">
                                         <a type="button" class="btn btn-outline-warning"
                                             href="show/{{ $agent->id }}">Detail</a>
                                         <form action="delete/{{ $agent->id }}" method="get" class="d-inline">

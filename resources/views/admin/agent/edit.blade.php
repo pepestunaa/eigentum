@@ -8,25 +8,23 @@
                 <br>
                 <div class="card bg-light">
                     <div class="card-body">
-                        <form method="post" action="/admin/agent/update/ {{ $agent->id }}">
+                        <form method="post" action="/admin/agent/update/ {{ $agent->id }}" enctype="multipart/form-data">
                             @csrf
+                            <div class="form-group">
+                                <label for="name" class="form-label">Name</label>
+                                <input class="form-control" id="name" name="name"
+                                    value="{{ old('name', $agent->name) }}" required>
+                            </div>
+                            <br>
                             <div class="form-group">
                                 <label for="email" class="form-label">Email</label>
                                 <input class="form-control" id="email" name="email"
                                     value="{{ old('email', $agent->email) }}" required>
                             </div>
                             <br>
-
                             <div class="form-group">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <br>
-
-                            <div class="form-group">
-                                <label for="name" class="form-label">Name</label>
-                                <input class="form-control" id="name" name="name"
-                                    value="{{ old('name', $agent->name) }}" required>
+                                <input type="password" class="form-control" id="password" name="password">
                             </div>
                             <br>
                             <div class="form-group">
@@ -35,21 +33,24 @@
                                     value="{{ old('address', $agent->address) }}" required>
                             </div>
                             <br>
-
                             <div class="form-group">
                                 <label for="location" class="form-label">Location</label>
                                 <input class="form-control" id="location" name="location"
                                     value="{{ old('location', $agent->location) }}" required>
                             </div>
                             <br>
-
                             <div class="form-group">
-                                <label for="ktp" class="form-label">KTP</label>
-                                <input class="form-control" id="ktp" name="ktp"
-                                    value="{{ old('ktp', $agent->ktp) }}" required>
+                                @if ($agent->ktp)
+                                    <img src="{{ asset('storage/' . $agent->ktp) }}" alt="{{ $agent->ktp }}"
+                                        width="100">
+                                @endif
+                                <div class="form-group">
+                                    <label for="" class="form-label">Ktp</label>
+                                    <input type="file" class="form-control" id="ktp" name="ktp">
+                                </div>
+                                
                             </div>
                             <br>
-
                             <div class="form-group">
                                 <label for="phone_number" class="form-label">Phone Number</label>
                                 <input class="form-control" id="phone_number" name="phone_number"

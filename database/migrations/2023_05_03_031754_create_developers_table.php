@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('developers', function (Blueprint $table) {
             $table->id();
-            $table->string("email");
-            $table->string("password");
             $table->string("company");
-            $table->string("address");
+            $table->string("email")->unique();
+            $table->string("password");
             $table->string("owner");
+            $table->string("address");
             $table->string("license");
-            $table->bigInteger("phone_number");
+            $table->string("phone_number");
             $table->softDeletes();
             $table->timestamps();
         });

@@ -11,7 +11,9 @@ class Specification extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = "specifications";
     protected $guarded = ['id'];
+
 
     protected $hidden = [
         'created_at',
