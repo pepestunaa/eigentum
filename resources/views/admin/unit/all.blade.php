@@ -22,14 +22,8 @@
                             <th scope="col">Description</th>
                             <th scope="col">Price</th>
                             <th scope="col">Rent</th>
-                            <th scope="col">Image 1</th>
-                            <th scope="col">Image 2</th>
-                            <th scope="col">Image 3</th>
-                            <th scope="col">Image 4</th>
-                            <th scope="col">Image plan</th>
+                            <th scope="col">Base Image</th>
                             <th scope="col">Bloc</th>
-                            <th scope="col">Certificate</th>
-                            <th scope="col" class="text-start">Specification Id</th>
                             <th scope="col" class="text-start">Property Name</th>
                             <th scope="col"></th>
                         </tr>
@@ -39,27 +33,14 @@
                             @foreach ($units as $unit)
                                 <tr align="center">
                                     <td class=""><?= $loop->iteration ?></td>
-                                    {{-- <td class=""><?= $unit->id ?></td> --}}
                                     <td class="text-start"><?= $unit->title ?></td>
                                     <td class="text-start"><?= $unit->description ?></td>
                                     <td class="text-start"><?= $unit->price ?></td>
                                     <td class="text-start"><?= $unit->rent ?></td>
                                     <td class="text-start"><img src="{{ asset('storage/' . $unit->image_1) }}"
                                             width="60" heigth="60"></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image_2) }}"
-                                            width="60" heigth="60"></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image_3) }}"
-                                            width="60" heigth="60"></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image_4) }}"
-                                            width="60" heigth="60"></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image_plan) }}"
-                                            width="60" heigth="60"></td>
                                     <td class="text-start"><?= $unit->bloc ?></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->certificate) }}"
-                                            width="60" heigth="60"></td>
-
-                                    <td class="text-start "><?= $unit->specification->id ?></td>
-                                    <td class="text-start "><?= $unit->property->property ?></td>
+                                    <td class="text-start "><?= $unit->properties->property ?></td>
 
                                     <td class="text-end">
                                         <a type="button" class="btn btn-outline-warning"
