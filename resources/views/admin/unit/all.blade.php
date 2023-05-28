@@ -21,10 +21,11 @@
                             <th scope="col">Title</th>
                             <th scope="col">Description</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Rent</th>
-                            <th scope="col">Base Image</th>
-                            <th scope="col">Bloc</th>
+                            {{-- <th scope="col">Rent</th> --}}
+                            <th scope="col">Image</th>
+                            {{-- <th scope="col">Bloc</th> --}}
                             <th scope="col" class="text-start">Property Name</th>
+                            <th scope="col" class="text-start">Status</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -36,11 +37,16 @@
                                     <td class="text-start"><?= $unit->title ?></td>
                                     <td class="text-start"><?= $unit->description ?></td>
                                     <td class="text-start"><?= $unit->price ?></td>
-                                    <td class="text-start"><?= $unit->rent ?></td>
-                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image_1) }}"
-                                            width="60" heigth="60"></td>
-                                    <td class="text-start"><?= $unit->bloc ?></td>
+                                    {{-- <td class="text-start"><?= $unit->rent ?></td> --}}
+                                    <td class="text-start"><img src="{{ asset('storage/' . $unit->image) }}" width="60"
+                                            heigth="60"></td>
+                                    {{-- <td class="text-start"><?= $unit->bloc ?></td> --}}
                                     <td class="text-start "><?= $unit->properties->property ?></td>
+                                    <td class="text-start ">
+                                        @foreach ($unit->status as $role)
+                                            {{ $role->name }}
+                                        @endforeach
+                                    </td>
 
                                     <td class="text-end">
                                         <a type="button" class="btn btn-outline-warning"
