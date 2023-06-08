@@ -30,7 +30,7 @@ a {
   min-height: 100vh;
   font-family: "Lato", sans-serif;
   width: 100%;
-  background: url("/assets/DetailAgent/bg3.jpg") no-repeat 50% 20% / cover;
+  background: url("/assets/agent/detail/bg3.jpg") no-repeat 50% 20% / cover;
   min-height: calc(100px + 15vw);
 }
 
