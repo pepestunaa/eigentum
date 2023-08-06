@@ -14,13 +14,13 @@ class AdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $roles): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role_id == 'admin@gmail.com') {
+        if (Auth::check() && Auth::user()->role == 'admin') {
             return $next($request);
+        }else{
+            return abort(403, 'Unauthorized action.');
         }
-
-        // Jika pengguna belum login, Anda mungkin ingin melakukan sesuatu di sini, seperti mengarahkannya ke halaman login.
-        return redirect('/session/auth/user/signin');
+        return redirect('/beranda');
     }
 }
