@@ -44,8 +44,8 @@
         <link href="/css/Lib/assets/custom/css/custom.css" rel="stylesheet">
         <link href="/css/Lib/assets/custom/css/custom-responsive.css" rel="stylesheet">
 
-        <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="{{ config('midtrans.client_key') }}"></script>
+        {{-- <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="{{ config('midtrans.client_key') }}"></script> --}}
     </head>
 
     <body>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="order_details_table">
                     {{-- @foreach ($order as $order) --}}
-                    <form action="" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('sub.already', $developer->id) }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <h2>Detail Pembayaran</h2>
                         <div class="table-responsive">
@@ -166,12 +166,17 @@
                             </table>
                         </div>
                         <div class="form-group text-end">
-                            <a type="button" class="btn btn-warning" href="{{ route('developer.dashboard') }}">Back</a>
                             {{-- <a type="button" class="btn btn-primary"
-						href="{{ route('order.edit', $order->id) }}">Edit</a> --}}
+                            href="{{ route('order.edit', $order->id) }}">Edit</a> --}}
                             @if ($order->payment_status == 1)
+                                <a type="button" class="btn btn-warning" href="{{ route('langganan.index') }}">Back</a>
                                 <button class="btn btn-primary" id="pay-button">Pay Now</button>
                             @else
+                                {{-- <form action="{{ route('sub.already', $developer->id) }}" method="post"
+                                    enctype="multipart/form-data">
+                                    @csrf --}}
+                                    <button type="submit" class="btn btn-success">Go to Dashboard</button>
+                                {{-- </form> --}}
                                 Payment successful
                             @endif
                         </div>
@@ -187,7 +192,7 @@
             const payButton = document.querySelector('#pay-button');
             payButton.addEventListener('click', function(e) {
                 e.preventDefault();
-
+                
                 snap.pay('{{ $snapToken }}', {
                     // Optional
                     onSuccess: function(result) {
