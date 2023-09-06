@@ -12,7 +12,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link href="images/favicon.png" rel="shortcut icon">
-    <title>Ludus - Electronics, Apparel, Computers, Books, DVDs & more</title>
 
     <!--====== Google Font ======-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
@@ -27,13 +26,7 @@
     <link rel="stylesheet" href="css/Lib/fix/css/app.css">
 </head>
 <body class="config">
-    <div class="preloader is-active">
-        <div class="preloader__wrap">
-
-            <img class="preloader__img" src="images/preloader.png" alt=""></div>
-    </div>
-
-    <!--====== Main App ======-->
+    
     <div id="app">
 
 
@@ -41,7 +34,7 @@
         <div class="app-content">
 
             <!--====== Section 1 ======-->
-            <div class="u-s-p-t-90">
+            <div class="u-s-p-t-120">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-5">
@@ -64,21 +57,21 @@
                             <div class="pd u-s-m-b-30">
                                 <div class="slider-fouc pd-wrap">
                                     <div id="pd-o-initiate">
-                                        <div class="pd-o-img-wrap" data-src="images/product/product-d-1.jpg">
+                                        <div class="pd-o-img-wrap" data-src="/assets/pages/home/kota.jpg">
 
-                                            <img class="u-img-fluid" src="images/product/product-d-1.jpg" data-zoom-image="images/product/product-d-1.jpg" alt=""></div>
-                                        <div class="pd-o-img-wrap" data-src="images/product/product-d-2.jpg">
+                                            <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" data-zoom-image="/assets/pages/home/kota.jpg" alt=""></div>
+                                        <div class="pd-o-img-wrap" data-src="/assets/pages/home/kota.jpg">
 
-                                            <img class="u-img-fluid" src="images/product/product-d-2.jpg" data-zoom-image="images/product/product-d-2.jpg" alt=""></div>
-                                        <div class="pd-o-img-wrap" data-src="images/product/product-d-3.jpg">
+                                            <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" data-zoom-image="/assets/pages/home/kota.jpg" alt=""></div>
+                                        <div class="pd-o-img-wrap" data-src="/assets/pages/home/kota.jpg">
 
-                                            <img class="u-img-fluid" src="images/product/product-d-3.jpg" data-zoom-image="images/product/product-d-3.jpg" alt=""></div>
-                                        <div class="pd-o-img-wrap" data-src="images/product/product-d-4.jpg">
+                                            <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" data-zoom-image="/assets/pages/home/kota.jpg" alt=""></div>
+                                        <div class="pd-o-img-wrap" data-src="/assets/pages/home/kota.jpg">
 
-                                            <img class="u-img-fluid" src="images/product/product-d-4.jpg" data-zoom-image="images/product/product-d-4.jpg" alt=""></div>
-                                        <div class="pd-o-img-wrap" data-src="images/product/product-d-5.jpg">
+                                            <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" data-zoom-image="/assets/pages/home/kota.jpg" alt=""></div>
+                                        <div class="pd-o-img-wrap" data-src="/assets/pages/home/kota.jpg">
 
-                                            <img class="u-img-fluid" src="images/product/product-d-5.jpg" data-zoom-image="images/product/product-d-5.jpg" alt=""></div>
+                                            <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" data-zoom-image="/assets/pages/home/kota.jpg" alt=""></div>
                                     </div>
 
                                     <span class="pd-text">Klik untuk zoom lebih besar</span>
@@ -88,19 +81,19 @@
                                         <div id="pd-o-thumbnail">
                                             <div>
 
-                                                <img class="u-img-fluid" src="images/product/product-d-1.jpg" alt=""></div>
+                                                <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" alt=""></div>
                                             <div>
 
-                                                <img class="u-img-fluid" src="images/product/product-d-2.jpg" alt=""></div>
+                                                <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" alt=""></div>
                                             <div>
 
-                                                <img class="u-img-fluid" src="images/product/product-d-3.jpg" alt=""></div>
+                                                <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" alt=""></div>
                                             <div>
 
-                                                <img class="u-img-fluid" src="images/product/product-d-4.jpg" alt=""></div>
+                                                <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" alt=""></div>
                                             <div>
 
-                                                <img class="u-img-fluid" src="images/product/product-d-5.jpg" alt=""></div>
+                                                <img class="u-img-fluid" src="/assets/pages/home/kota.jpg" alt=""></div>
                                         </div>
                                     </div>
                                 </div>
@@ -179,6 +172,12 @@
                                         <li class="nav-item">
 
                                             <a class="nav-link active" data-toggle="tab" href="#pd-desc">DESCRIPTION</a></li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-toggle="tab" href="#pd-desc">
+                                                    <i class="fas fa-plus"></i> TAMBAH UNIT
+                                                </a>
+                                            </li>
+                                            
                                     </ul>
                                 </div>
                                 <div class="tab-content">
@@ -210,6 +209,14 @@
                                                 <div class="pd-table gl-scroll">
                                                     <table>
                                                         <tbody>
+                                                            <tr>
+                                                                <td>Developer</td>
+                                                                <td>Sutejo</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Tipe Properti</td>
+                                                                <td>Apartemen</td>
+                                                            </tr>
                                                             <tr>
                                                                 <td>Tipe Properti</td>
                                                                 <td>Apartemen</td>
@@ -270,9 +277,9 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="section__text-wrap">
-                                    <h1 class="section__heading u-c-secondary u-s-m-b-12">PROPERTI SERUPA</h1>
+                                    <h1 class="section__heading u-c-secondary u-s-m-b-12">DAFTAR UNIT</h1>
 
-                                    <span class="section__span u-c-grey">PROPERTI YANG DILIHAT CUSTOMER</span>
+                                    <span class="section__span u-c-grey">DAFTAR UNIT YANG TERCANTUM</span>
                                 </div>
                             </div>
                         </div>
@@ -292,7 +299,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product1.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -313,13 +320,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Beats Bomb Wireless Headphone</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                                 <div class="u-s-m-b-30">
@@ -328,7 +335,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product2.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -349,13 +356,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Red Wireless Headphone</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                                 <div class="u-s-m-b-30">
@@ -364,7 +371,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product3.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -385,13 +392,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Yellow Wireless Headphone</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                                 <div class="u-s-m-b-30">
@@ -400,7 +407,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product23.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -421,13 +428,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Razor Gear Ultra Slim 8GB Ram</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                                 <div class="u-s-m-b-30">
@@ -436,7 +443,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product26.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -457,13 +464,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Razor Gear Ultra Slim 12GB Ram</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                                 <div class="u-s-m-b-30">
@@ -472,7 +479,7 @@
 
                                             <a class="aspect aspect--bg-grey aspect--square u-d-block" href="product-detail.html">
 
-                                                <img class="aspect__img" src="images/product/electronic/product30.jpg" alt=""></a>
+                                                <img class="aspect__img" src="/assets/pages/home/kota.jpg" alt=""></a>
                                             <div class="product-o__action-wrap">
                                                 <ul class="product-o__action-list">
                                                     <li>
@@ -493,13 +500,13 @@
 
                                         <span class="product-o__category">
 
-                                            <a href="shop-side-version-2.html">Electronics</a></span>
+                                            <a href="shop-side-version-2.html">Rumah</a></span>
 
                                         <span class="product-o__name">
 
-                                            <a href="product-detail.html">Razor Gear Ultra Slim 16GB Ram</a></span>
+                                            <a href="product-detail.html">Rumah Minimalis</a></span>
 
-                                        <span class="product-o__price">$125.00</span>
+                                        <span class="product-o__price">Rp. 1.300.000.000</span>
                                     </div>
                                 </div>
                             </div>
