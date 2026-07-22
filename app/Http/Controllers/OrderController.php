@@ -62,7 +62,8 @@ class OrderController extends Controller
 
             return redirect()->route('order.index');
         } catch (\Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 
@@ -90,7 +91,8 @@ class OrderController extends Controller
 
             return redirect('/pages/detailorder/' . $order->id);
         } catch (\Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 

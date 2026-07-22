@@ -38,7 +38,8 @@ class ProviderController extends Controller
             Auth::login($user);
             return redirect('/');
         } catch (\Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
         // dd($user);
     }

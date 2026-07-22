@@ -91,7 +91,7 @@ class PropertyController extends Controller
             $imageField = $request->file('image');
             $imageNames = [];
             if ($imageField) {
-                $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+                $imageName = $imageField->hashName();
                 $imageNames[] = $imageName;
                 $imageField->storeAs('public', $imageName);
             }
@@ -131,7 +131,8 @@ class PropertyController extends Controller
                 return redirect(route('developer.dashboard'));
             }
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
     public function storeFront(Request $request)
@@ -151,7 +152,7 @@ class PropertyController extends Controller
         $imageField = $request->file('image');
         $imageNames = [];
         if ($imageField) {
-            $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+            $imageName = $imageField->hashName();
             $imageNames[] = $imageName;
             $imageField->storeAs('public', $imageName);
         }
@@ -256,7 +257,7 @@ class PropertyController extends Controller
 
             // Simpan gambar baru
             $imageField = $request->file($image);
-            $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+            $imageName = $imageField->hashName();
             $imageField->storeAs('public', $imageName);
             $property->$image = $imageName;
         }

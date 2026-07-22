@@ -176,7 +176,8 @@ class AgentController extends Controller
 
             return redirect('/');
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
     public function store(Request $request)
@@ -440,7 +441,7 @@ class AgentController extends Controller
                 $images = ['ktp', 'face'];
                 foreach ($images as $key => $image) {
                     if ($request->hasFile($image)) {
-                        $imageName = $request->{$image}->getClientOriginalName() . "." . $request->{$image}->getClientOriginalExtension();
+                        $imageName = $request->{$image}->hashName();
                         $image_path = Storage::disk('public')->put($imageName, file_get_contents($request->{$image}));
                         if (File::exists($image_path)) {
                             File::delete($image_path);
@@ -456,7 +457,8 @@ class AgentController extends Controller
 
             return redirect(route('agent.show', $id));
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
     public function updateFront(Request $request, string $id)
@@ -509,7 +511,7 @@ class AgentController extends Controller
                 $images = ['ktp', 'face'];
                 foreach ($images as $key => $image) {
                     if ($request->hasFile($image)) {
-                        $imageName = $request->{$image}->getClientOriginalName() . "." . $request->{$image}->getClientOriginalExtension();
+                        $imageName = $request->{$image}->hashName();
                         $image_path = Storage::disk('public')->put($imageName, file_get_contents($request->{$image}));
                         if (File::exists($image_path)) {
                             File::delete($image_path);
@@ -525,7 +527,8 @@ class AgentController extends Controller
             // $agent = Agent::where('id', '=', $agent->id)->get();
             return redirect()->back();
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 

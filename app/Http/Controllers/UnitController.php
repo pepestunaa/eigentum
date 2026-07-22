@@ -166,7 +166,7 @@ class UnitController extends Controller
             $imageFieldName = $request->file('image');
             $imageNames = [];
 
-            $imageName = $imageFieldName->getClientOriginalName() . "." . $imageFieldName->getClientOriginalExtension();
+            $imageName = $imageFieldName->hashName();
             $imageNames[] = $imageName;
             $imageFieldName->storeAs('public', $imageName);
 
@@ -195,7 +195,7 @@ class UnitController extends Controller
                 if (!is_null($file)) {
                     $imageArray = [];
                     foreach ($file as $fieldName) {
-                        $imageFileName = $fieldName->getClientOriginalName() . "." . $fieldName->getClientOriginalExtension();
+                        $imageFileName = $fieldName->hashName();
                         $imageArray[] = $imageFileName;
                         $fieldName->storeAs('public', $imageFileName);
                     }
@@ -222,7 +222,8 @@ class UnitController extends Controller
                 return redirect(route('property.show.developer', $propertyId));
             }
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 
@@ -350,7 +351,7 @@ class UnitController extends Controller
                     }
 
                     $uploadedImage = $request->file($column . '_update.' . $index);
-                    $imageName = Str::limit($uploadedImage->getClientOriginalName(), 8) . '.' . $uploadedImage->getClientOriginalExtension();
+                    $imageName = $uploadedImage->hashName();
                     $uploadedImage->storeAs('public', $imageName);
                     $existingImages[$index] = $imageName;
                 }
@@ -362,7 +363,7 @@ class UnitController extends Controller
                 $newImages = [];
 
                 foreach ($uploadedImages as $uploadedImage) {
-                    $imageName = Str::limit($uploadedImage->getClientOriginalName(), 8) . '.' . $uploadedImage->getClientOriginalExtension();
+                    $imageName = $uploadedImage->hashName();
                     $uploadedImage->storeAs('public', $imageName);
                     $existingImages[] = $imageName;
                 }

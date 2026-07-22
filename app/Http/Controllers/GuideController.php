@@ -101,7 +101,7 @@ class GuideController extends Controller
         $images = ['image'];
         foreach ($images as $key => $image) {
             if ($request->hasFile($image)) {
-                $imageName = $request->{$image}->getClientOriginalName() . "." . $request->{$image}->getClientOriginalExtension();
+                $imageName = $request->{$image}->hashName();
                 $image_path = Storage::disk('public')->put($imageName, file_get_contents($request->{$image}));
                 if (File::exists($image_path)) {
                     File::delete($image_path);

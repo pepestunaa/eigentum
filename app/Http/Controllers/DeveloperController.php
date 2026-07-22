@@ -210,7 +210,7 @@ class DeveloperController extends Controller
                 $imageField = $request->file($image);
 
                 if ($imageField) {
-                    $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+                    $imageName = $imageField->hashName();
                     $imageNames[] = $imageName;
                     $imageField->storeAs('public', $imageName);
                 }
@@ -221,7 +221,7 @@ class DeveloperController extends Controller
             $fileArray = [];
 
             foreach ($files as $index => $file) {
-                $license =  $file->getClientOriginalName() . "." . $file->getClientOriginalExtension();
+                $license =  $file->hashName();
                 $fileArray[] = $license;
                 Storage::disk('public')->put($license, file_get_contents($file));
             }
@@ -255,7 +255,8 @@ class DeveloperController extends Controller
             Auth::login($user);
             return redirect(route('developer.index'));
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 
@@ -320,7 +321,7 @@ class DeveloperController extends Controller
                 $imageField = $request->file($image);
 
                 if ($imageField) {
-                    $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+                    $imageName = $imageField->hashName();
                     $imageNames[] = $imageName;
                     $imageField->storeAs('public', $imageName);
                 }
@@ -330,7 +331,7 @@ class DeveloperController extends Controller
             $fileArray = [];
 
             foreach ($files as $index => $file) {
-                $license =  $file->getClientOriginalName() . "." . $file->getClientOriginalExtension();
+                $license =  $file->hashName();
                 $fileArray[] = $license;
                 Storage::disk('public')->put($license, file_get_contents($file));
             }
@@ -364,7 +365,8 @@ class DeveloperController extends Controller
             Auth::login($user);
             return redirect('/');
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
     public function show($id)
@@ -477,7 +479,7 @@ class DeveloperController extends Controller
 
                         // Simpan gambar baru
                         $imageField = $request->file($image);
-                        $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+                        $imageName = $imageField->hashName();
                         $imageField->storeAs('public', $imageName);
                         $developer->$image = $imageName;
                     }
@@ -487,7 +489,7 @@ class DeveloperController extends Controller
                     $licenses = $request->file('license');
                     foreach ($licenses as $index => $license) {
                         if ($license->isValid()) {
-                            $licenseName = $license->getClientOriginalName() . '.' . $license->getClientOriginalExtension();
+                            $licenseName = $license->hashName();
                             $license->storeAs('public', $licenseName);
                             $fileArray = explode('|', $developer->license);
                             $fileArray[$index] = $licenseName;
@@ -516,7 +518,8 @@ class DeveloperController extends Controller
             //     // dd($users);
             // }
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 
@@ -600,7 +603,7 @@ class DeveloperController extends Controller
 
                         // Simpan gambar baru
                         $imageField = $request->file($image);
-                        $imageName = $imageField->getClientOriginalName() . "." . $imageField->getClientOriginalExtension();
+                        $imageName = $imageField->hashName();
                         $imageField->storeAs('public', $imageName);
                         $developer->$image = $imageName;
                     }
@@ -610,7 +613,7 @@ class DeveloperController extends Controller
                     $licenses = $request->file('license');
                     foreach ($licenses as $index => $license) {
                         if ($license->isValid()) {
-                            $licenseName = $license->getClientOriginalName() . '.' . $license->getClientOriginalExtension();
+                            $licenseName = $license->hashName();
                             $license->storeAs('public', $licenseName);
                             $fileArray = explode('|', $developer->license);
                             $fileArray[$index] = $licenseName;
@@ -639,7 +642,8 @@ class DeveloperController extends Controller
             //     // dd($users);
             // }
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
 
@@ -678,7 +682,8 @@ class DeveloperController extends Controller
 
             return  redirect(route('developer.index'));
         } catch (Exception $e) {
-            return $e;
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
         }
     }
     public function postSigninDeveloper(Request $request)
