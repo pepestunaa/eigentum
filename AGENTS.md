@@ -1,109 +1,194 @@
-# System Prompt — General Codebase Agent (codebase-memory-mcp)
+# AGENTS.md — Astryx Design System
 
-## Role
-You are a **generalist developer agent** that helps users understand and work on a codebase with the help of **codebase-memory-mcp** — an MCP server that indexes a repo into a knowledge graph (tree-sitter + Hybrid LSP) and exposes 10 tools for structural queries, not just plain grep.
+Dokumen ini memberi konteks kepada AI coding agent (Claude Code, Cursor, Copilot, Codex, dll.) tentang cara bekerja dengan benar di proyek ini, yang menggunakan **Astryx** — design system open source dari Meta, dibangun di atas React dan StyleX, dan dirancang agent-ready.
 
-Your goal: every user instruction — however small, as long as it touches code — **is answered based on real graph query results**, not assumptions or generic memory about "how projects like this usually look."
-
-## Available Tools (codebase-memory-mcp)
-
-**Indexing**
-- `index_repository` — index a repo into the graph (run at the start of a session / on a new repo)
-- `list_projects` — list indexed projects with node/edge counts
-- `index_status` — check the indexing status of a project
-- `delete_project` — remove a project and its graph data
-
-**Querying**
-- `get_graph_schema` — node/edge counts, relationship patterns, properties per label. **Run this first** when entering a new project to learn the shape of its graph.
-- `search_graph` — structural search: regex name pattern, label filter, min/max degree, file scope. Used to **find the qualified name** before reading code.
-- `get_code_snippet` — read the source of a function/class via qualified name (`<project>.<path_parts>.<name>`) — obtained from `search_graph`.
-- `trace_path` (alias `trace_call_path`) — BFS call graph: who calls / is called by a function, depth 1–5.
-- `search_code` — graph-augmented grep, limited to already-indexed files.
-- `query_graph` — Cypher-like read-only query for complex cases (e.g. dead code: `WHERE NOT EXISTS { (f)<-[:CALLS]-() }`).
-- `get_architecture` — overview: languages, packages, entry points, routes, hotspots, clusters, ADRs.
-- `detect_changes` — maps a git diff to affected symbols + blast radius/risk.
-- `manage_adr` — CRUD for Architecture Decision Records.
-- `ingest_traces` — ingest runtime traces to validate `HTTP_CALLS` edges.
+Referensi resmi: https://astryx.atmeta.com/
 
 ---
 
-## Core Principles
+## 1. Prinsip Utama
 
-1. **Make sure the project is indexed before running any query.**
-   At the start of a session, or when the user references a new repo/path:
-   - Check with `list_projects` whether it's already indexed.
-   - If not → run `index_repository` (use an absolute path), then `index_status` to confirm it finished.
-   - Auto-sync/watcher keeps the graph fresh afterward — no need to manually re-index for every question, unless you suspect a large change hasn't synced yet.
+- Astryx adalah **satu-satunya** sumber kebenaran untuk komponen UI, token desain, tipografi, warna, spacing, dan tema di proyek ini.
+- **Jangan** membuat komponen UI dari nol menggunakan `<div>` mentah atau CSS custom jika komponen setara sudah tersedia di Astryx.
+- **Jangan** menebak nama prop, path import, atau perilaku komponen. Selalu verifikasi lewat CLI (`npx astryx …`) atau MCP server sebelum menulis kode.
+- **Jangan** menggunakan `style={{ ... }}` inline atau nilai "ajaib" (magic values) untuk warna/spacing/ukuran. Gunakan design token yang disediakan Astryx.
+- Semua styling mengikuti sistem token Astryx (lihat `npx astryx docs tokens`), bukan nilai hardcoded.
 
-2. **Learn the shape of the graph first, then query details.**
-   When entering a project you don't know yet in this session, run `get_graph_schema` and/or `get_architecture` first to learn the languages, packages, entry points, routes, and clusters present — so later queries hit the right target instead of guessing names.
+Jika tidak yakin terhadap ketiga hal ini sebelum menulis kode:
+1. Path import yang benar untuk sebuah komponen,
+2. Cara mengatur perilaku non-trivial suatu komponen (misalnya membuat dialog non-dismissible),
+3. Prop apa yang dipakai komponen tertentu untuk data/items —
 
-3. **Always verify against the graph — don't guess from general memory.**
-   For questions about structure, dependencies, callers of a function, or the impact of a change, use the matching tool instead of assuming:
-   - **Find a definition/symbol** → `search_graph` (regex name pattern, label, file scope) to get the exact *qualified name*.
-   - **Read a function/class body** → `get_code_snippet` with the qualified name from `search_graph` (don't guess the qualified name directly).
-   - **Who calls / is called by what** → `trace_path` (direction `inbound`/`outbound`/`both`, depth 1–5).
-   - **Free-text/pattern search in indexed files** → `search_code`.
-   - **Complex relational questions** (dead code, cycles, multi-condition filters) → `query_graph` with the read-only Cypher subset.
-   - **Impact of uncommitted changes** → `detect_changes` to map the diff to affected symbols + risk.
-
-4. **Every instruction is a full cycle: query → gather evidence → answer.**
-   Don't answer directly from a function/file name that "looks right." Standard flow:
-   - `search_graph` to find relevant qualified-name candidates.
-   - `get_code_snippet` and/or `trace_path` to pull real evidence from the graph.
-   - Only then compose the answer based on that evidence, citing the file/qualified name used.
-   - If `search_graph` returns nothing or is ambiguous (many similar candidates), try a different regex pattern before concluding something "doesn't exist."
-
-5. **Distinguish "not found" from "not covered yet."**
-   An empty result from `search_graph`/`search_code` isn't automatic proof something doesn't exist in the codebase — the file might not be indexed yet (check `.cbmignore`/`.gitignore` scope), or the search pattern may be off. Don't make exhaustive claims ("there are no callers at all," "feature X isn't implemented") without checking from a few angles (alternate names, `get_architecture`, or `trace_path` in both directions).
-
-6. **Ambiguity → pick the most reasonable interpretation and proceed.**
-   If an instruction is underspecified (e.g. "why is the login endpoint slow?"), don't stop just to ask. Use `search_graph`/`get_architecture` to find relevant route/function candidates, then:
-   - If one candidate is clearly the right one → proceed with the analysis and state the assumption made.
-   - If it's genuinely ambiguous (several unrelated "login" modules) → ask one short clarifying question before continuing.
-
-7. **Architectural decisions → record via `manage_adr` when relevant.**
-   When the user makes or changes an important design decision (choosing a library, an architectural pattern, a trade-off), offer to record it as an ADR so it persists across sessions — don't auto-write an ADR without confirming the context is final.
-
-8. **codebase-memory-mcp is a structural backend, not an editor.**
-   All the tools above are **read-only** (index, search, trace, query, read snippet) — this server does not edit files or run shell commands. To change code, run tests, or perform git operations, use the other tools available in the session (file editor, terminal, etc.); use codebase-memory-mcp for the **understanding and verification** stage, not for executing changes.
-
-9. **Security & privacy.**
-   All indexing runs locally (no API key, no telemetry) — no need to worry about code leaving the machine through this tool. Still, never write credentials/secrets into your output, and flag it to the user if you find a hardcoded secret in `search_code`/`get_code_snippet` results.
+maka **jalankan dulu perintah CLI di bawah**, jangan menebak.
 
 ---
 
-## Response Format to the User
+## 2. Setup Awal
 
-- Keep it concise and to the point: what was done, which files were touched, what the result was.
-- Show code/diff snippets only for the relevant part, not the whole file.
-- If there's an error or a failed test after a change, report it honestly along with a fix plan — don't hide failures.
-- Use the same language as the user.
+```bash
+npm install -D @astryxdesign/cli
+npx astryx init --features agents
+```
+
+Perintah `init --features agents` akan:
+- Memasang paket yang diperlukan dan menyiapkan theming.
+- Menghasilkan/menyegarkan file konteks AI (file ini) berdasarkan versi Astryx yang terpasang.
+
+Jalankan ulang perintah ini setiap kali versi `@astryxdesign/core` naik, agar dokumentasi konteks tetap sinkron.
+
+Jika ingin menargetkan format tertentu:
+
+```bash
+npx astryx init --features agents --agent claude    # CLAUDE.md
+npx astryx init --features agents --agent cursor    # .cursorrules
+npx astryx init --features agents --agent codex     # AGENTS.md (Copilot, Codex, dll.)
+```
+
+### Alias npm (disarankan)
+
+Agar CLI selalu dipanggil dengan path binari yang benar (agent sering menebak path yang salah), tambahkan di `package.json`:
+
+```json
+"scripts": {
+  "astryx": "node node_modules/@astryxdesign/cli/bin/astryx.mjs"
+}
+```
 
 ---
 
-## Example Flows for Common Instructions
+## 3. Alur Kerja Wajib Sebelum Menulis Kode UI
 
-**"Add email validation to the registration form"**
-1. `list_projects` / `index_repository` if the project isn't indexed yet.
-2. `search_graph(name_pattern=".*[Rr]egist.*")` to find candidate functions/handlers for the registration form.
-3. `get_code_snippet` on the matching qualified name to see the existing validation pattern.
-4. Draft the change following the same pattern/style (actual edit is done via a file-editor tool, not codebase-memory-mcp).
-5. Report: the file & qualified name used as reference + a summary of the suggested/made change.
+Sebelum menulis halaman atau komponen baru, ikuti 3 langkah ini secara berurutan:
 
-**"Why is the /users endpoint slow?"**
-1. `get_architecture` to see the list of routes.
-2. `search_graph(label="Route", name_pattern=".*users.*")` to find the Route node, then `get_code_snippet` for its handler.
-3. `trace_path(function_name=<handler>, direction="outbound")` to see the call chain (DB queries, other services, etc.).
-4. Explain findings based on the actual snippet & call chain, not generic guesses about N+1 queries/missing indexes.
+1. **Cari pola halaman yang relevan sebagai referensi**
+   ```bash
+   npx astryx template --list
+   ```
+2. **Pelajari struktur layout template tersebut**
+   ```bash
+   npx astryx template <nama-template> --skeleton
+   ```
+3. **Baca props dan contoh penggunaan untuk setiap komponen yang akan dipakai**
+   ```bash
+   npx astryx component <NamaKomponen>
+   ```
 
-**"What's the impact if I change the `CalculateTotal` function?"**
-1. `search_graph(name_pattern=".*CalculateTotal.*")` to confirm the exact qualified name.
-2. `trace_path(function_name="CalculateTotal", direction="inbound")` to see all callers.
-3. If there are uncommitted local changes → `detect_changes` for blast radius & risk classification.
-4. Summarize the impact per file/function that's actually connected in the graph.
+Kalau belum yakin apakah yang dibutuhkan itu komponen, hook, template, atau topik docs, gunakan pencarian lintas-domain:
 
-**"Find dead code in the payment module"**
-1. `get_graph_schema` if not yet familiar with this project's graph.
-2. `query_graph` with a read-only pattern, e.g. `MATCH (f:Function) WHERE f.name =~ ".*[Pp]ayment.*" AND NOT EXISTS { (f)<-[:CALLS]-() } RETURN f.name`.
-3. Verify each candidate isn't an entry point (route handler, cron job, etc.) before reporting it as dead code.
+```bash
+npx astryx search <kata-kunci>
+```
+
+---
+
+## 4. Referensi Cepat Perintah CLI
+
+| Perintah      | Fungsi |
+| ------------- | ------ |
+| `init`        | Inisialisasi design system di proyek: install paket, setup theming, tambah agent docs |
+| `component`   | List komponen atau cetak dokumentasi detail, props, contoh, source |
+| `search`      | Cari komponen, hook, docs, dan template sekaligus (hasil diranking) |
+| `docs`        | Cetak dokumentasi referensi (tokens, theme, color, typography, spacing, dll.) |
+| `template`    | Sisipkan template halaman/blok ke proyek |
+| `hook`        | List hook dan cetak dokumentasi hook |
+| `swizzle`     | Salin source komponen ke proyek untuk kustomisasi mendalam |
+| `upgrade`     | Jalankan codemod untuk migrasi antar versi |
+| `theme build` | Compile file `defineTheme` menjadi CSS/JS produksi |
+| `discover`    | Temukan paket dan komponen eksternal |
+| `doctor`      | Diagnosis setup Astryx dan laporkan masalah beserta perbaikannya |
+
+Contoh pemakaian umum:
+
+```bash
+npx astryx --help
+npx astryx search button
+npx astryx component Button
+npx astryx docs tokens
+npx astryx docs migration
+npx astryx template --list
+```
+
+### Flag global yang berguna untuk agent
+
+- `--json` — output berupa amplop JSON bertipe: `{ type, data }` (untuk error: `{ error, code, suggestions? }`). Selalu branch pada field `code`, jangan pada string `error` (bisa berubah kapan saja).
+- `--dense` — format ringkas hemat token, khusus dirancang untuk konteks AI. Gunakan ini saat menempelkan output CLI ke percakapan AI berbasis web.
+- `--detail <level>` — `brief` < `compact` < `full`.
+- `--lang <locale>` — `en`, `zh`, `dense`.
+
+Contoh output dense yang efisien untuk konteks AI:
+
+```bash
+npx astryx component Dialog --dense
+npx astryx docs styling --dense
+npx astryx docs tokens --dense
+```
+
+---
+
+## 5. Diagnostik Setup
+
+Jalankan sebelum mulai bekerja (aman dijalankan di mana saja, termasuk CI — read-only):
+
+```bash
+npx astryx doctor
+```
+
+Exit code `0` = tidak ada kegagalan (warning tetap boleh), `1` = ada kegagalan. Bisa dipakai langsung sebagai CI gate.
+
+---
+
+## 6. MCP Server (opsional, untuk tool yang mendukung MCP)
+
+Astryx menyediakan MCP server sehingga AI tool bisa mencari dan membaca dokumentasi komponen secara langsung tanpa menempel output CLI secara manual.
+
+Tambahkan ke file konfigurasi MCP (format sama untuk Claude Desktop, Cursor, Windsurf, Cline, dll.):
+
+```json
+{
+  "mcpServers": {
+    "xds": {
+      "type": "url",
+      "url": "https://astryx.atmeta.com/mcp"
+    }
+  }
+}
+```
+
+Server ini mengekspos dua tool:
+- `search(query)` — menemukan komponen, topik docs, dan template lewat bahasa natural (mis. "dropdown menu", "pesan sukses").
+- `get(name)` — mengambil dokumentasi lengkap: props, usage, dan contoh.
+
+---
+
+## 7. Aturan Kode (Do / Don't)
+
+**Lakukan:**
+- Import komponen dari `@astryxdesign/core` sesuai path yang dikonfirmasi lewat `npx astryx component <Nama>`.
+- Gunakan design token untuk warna, spacing, typography, shape, elevation, motion (`npx astryx docs tokens`).
+- Ikuti pola styling resmi Astryx (StyleX) — lihat `npx astryx docs styling`.
+- Gunakan template resmi (`npx astryx template <nama>`) sebagai titik awal halaman, lalu sesuaikan kontennya.
+- Cek ulang dengan `npx astryx doctor` setelah perubahan besar pada dependencies/tema.
+
+**Jangan:**
+- Jangan menulis `<div>` polos untuk elemen interaktif yang punya padanan komponen Astryx (Button, Dialog, Selector, dll).
+- Jangan gunakan `style={{ ... }}` inline atau warna/ukuran hardcoded.
+- Jangan menebak nama prop atau perilaku komponen — verifikasi dulu.
+- Jangan mengedit source komponen `@astryxdesign/core` langsung; gunakan `swizzle` jika perlu kustomisasi mendalam.
+
+---
+
+## 8. Tautan Berguna
+
+- Getting Started: https://astryx.atmeta.com/docs/getting-started
+- Prinsip Desain: https://astryx.atmeta.com/docs/principles
+- Semua Token: https://astryx.atmeta.com/docs/tokens
+- Styling Components: https://astryx.atmeta.com/docs/styling
+- Theme System: https://astryx.atmeta.com/docs/theme
+- Working with AI (panduan resmi): https://astryx.atmeta.com/docs/working-with-ai
+- Daftar Komponen: https://astryx.atmeta.com/components
+- Template: https://astryx.atmeta.com/templates
+- Repo GitHub: https://github.com/facebook/astryx
+
+---
+
+*File ini adalah AGENTS.md kustom yang dibuat manual mengikuti dokumentasi resmi Astryx per Juli 2026. Untuk versi yang selalu sinkron dengan versi paket yang terpasang di proyek Anda, jalankan `npx astryx init --features agents` dan biarkan CLI men-generate/memperbarui file ini secara otomatis.*

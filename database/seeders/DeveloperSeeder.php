@@ -66,33 +66,24 @@ class DeveloperSeeder extends Seeder
         }
     }
 
+    private $cachedFiles = [];
+
     private function getImageUrls($folderName, $count, $width = 400, $height = 300)
     {
-        $imageUrls = [];
-
-        for ($i = 0; $i < $count; $i++) {
-            // Ambil gambar dari folder public/$folderName
-            $files = File::files(public_path($folderName));
-            $randomImagePath = Arr::random($files);
-
-            // Ubah path relatif gambar menjadi path absolut di folder storage
-            $imagePath = $randomImagePath->getRealPath();
-
-            // Ambil nama file dari path
-            $imageName = pathinfo($imagePath, PATHINFO_FILENAME) . '.' . $randomImagePath->getExtension();
-
-            // Tambahkan nama file ke dalam array imageUrls
-            $imageUrls[] = $imageName;
+        if (!isset($this->cachedFiles[$folderName])) {
+            $this->cachedFiles[$folderName] = File::files(public_path($folderName));
         }
-
-        // Pindahkan semua gambar ke folder storage
-        foreach ($imageUrls as $imageName) {
-            $imagePath = public_path($folderName . '/' . $imageName);
-
-            Storage::delete('public/' . $folderName . '/' . $imageName);
-
-            // Pindahkan gambar ke folder storage
-            Storage::putFileAs('public/', $imagePath, $imageName);
+        
+        $imageUrls = [];
+        
+        for ($i = 0; $i < $count; $i++) {
+            $randomImagePath = Arr::random($this->cachedFiles[$folderName]);
+            $imageName = $randomImagePath->getFilename();
+            $imageUrls[] = $imageName;
+            
+            if (!Storage::exists('public/' . $imageName)) {
+                Storage::putFileAs('public/', $randomImagePath->getRealPath(), $imageName);
+            }
         }
 
         return $imageUrls;

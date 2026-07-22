@@ -18,6 +18,8 @@ sleep 10
 
 php artisan migrate:fresh --seed --force
 
+php artisan storage:link
+
 npm run dev &
 
 exec php artisan serve --host=0.0.0.0 --port=8000
