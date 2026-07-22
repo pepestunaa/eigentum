@@ -113,20 +113,21 @@ class PropertySeeder extends Seeder
         
     }
 
+    private $cachedFiles = [];
+
     private function getImageUrl($folderName, $width = 400, $height = 300)
     {
-        $files = File::files(public_path($folderName));
-        $randomImagePath = Arr::random($files);
-    
-        $imagePath = $randomImagePath->getRealPath();
-    
-        $imageName = pathinfo($imagePath, PATHINFO_FILENAME) . '.' . $randomImagePath->getExtension();
-    
-        Storage::delete('public/' . $folderName . '/' . $imageName);
-    
-        Storage::putFileAs('public/' , $imagePath, $imageName);
-    
-    
+        if (!isset($this->cachedFiles[$folderName])) {
+            $this->cachedFiles[$folderName] = File::files(public_path($folderName));
+        }
+
+        $randomImagePath = Arr::random($this->cachedFiles[$folderName]);
+        $imageName = $randomImagePath->getFilename();
+
+        if (!Storage::exists('public/' . $imageName)) {
+            Storage::putFileAs('public/', $randomImagePath->getRealPath(), $imageName);
+        }
+
         return $imageName;
     }
 }

@@ -110,27 +110,24 @@ class UnitSeeder extends Seeder
         }
     }
 
+    private $cachedFiles = [];
+
     private function getImageUrls($folderName, $count, $width = 400, $height = 300)
     {
+        if (!isset($this->cachedFiles[$folderName])) {
+            $this->cachedFiles[$folderName] = File::files(public_path($folderName));
+        }
+
         $imageUrls = [];
         
         for ($i = 0; $i < $count; $i++) {
-            $files = File::files(public_path($folderName));
-            $randomImagePath = Arr::random($files);
-        
-            $imagePath = $randomImagePath->getRealPath();
-        
-            $imageName = pathinfo($imagePath, PATHINFO_FILENAME) . '.' . $randomImagePath->getExtension();
-        
+            $randomImagePath = Arr::random($this->cachedFiles[$folderName]);
+            $imageName = $randomImagePath->getFilename();
             $imageUrls[] = $imageName;
-        }
 
-        foreach ($imageUrls as $imageName) {
-            $imagePath = public_path($folderName . '/' . $imageName);
-
-            Storage::delete('public/' . $folderName . '/' . $imageName);
-
-            Storage::putFileAs('public/' , $imagePath, $imageName);
+            if (!Storage::exists('public/' . $imageName)) {
+                Storage::putFileAs('public/', $randomImagePath->getRealPath(), $imageName);
+            }
         }
         
         return $imageUrls;
@@ -138,19 +135,7 @@ class UnitSeeder extends Seeder
 
     private function getImageUrl($folderName, $width = 400, $height = 300)
     {
-        $files = File::files(public_path($folderName));
-        $randomImagePath = Arr::random($files);
-    
-        $imagePath = $randomImagePath->getRealPath();
-    
-        $imageName = pathinfo($imagePath, PATHINFO_FILENAME) . '.' . $randomImagePath->getExtension();
-    
-        Storage::delete('public/' . $folderName . '/' . $imageName);
-    
-        Storage::putFileAs('public/' , $imagePath, $imageName);
-    
-    
-        return $imageName;
+        return $this->getImageUrls($folderName, 1)[0];
     }
 
 }

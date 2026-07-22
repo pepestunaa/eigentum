@@ -14,29 +14,31 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
+        $defaultPassword = Hash::make('password');
+
         $users = [
             [
                 'name' => 'admin',
                 'email' => 'admin@example.com',
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'admin',
             ],
             [
                 'name' => 'user',
                 'email' => 'user@example.com',
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'user',
             ],
             [
                 'name' => 'developer',
                 'email' => 'developer@example.com',
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'developer',
             ],
             [
                 'name' => 'agent',
                 'email' => 'agent@example.com',
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'agent',
             ],
         ];
@@ -46,7 +48,7 @@ class UsersTableSeeder extends Seeder
             $users[] = [
                 'name' => fake()->firstName,
                 'email' => fake()->unique()->safeEmail,
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'user',
             ];
         }
@@ -55,7 +57,7 @@ class UsersTableSeeder extends Seeder
             $users[] = [
                 'name' => fake()->firstName,
                 'email' => fake()->unique()->safeEmail,
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'developer',
             ];
         }
@@ -65,7 +67,7 @@ class UsersTableSeeder extends Seeder
             $users[] = [
                 'name' => fake()->firstName,
                 'email' => fake()->unique()->safeEmail,
-                'password' => Hash::make('password'),
+                'password' => $defaultPassword,
                 'role' => 'agent',
             ];
         }
