@@ -13,28 +13,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         <script src="https://code.jquery.com/jquery-3.7.0.min.js"
             integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-        <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-        <script>
-            // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
 
-            var pusher = new Pusher('a3e94a0716cd0fa810d5', {
-                cluster: 'ap1'
-            });
-            var channel = pusher.subscribe('admin-notifications');
-            channel.bind('user-registered', function(data) {
-                // var notification = new Notification(data.message);
-                toastr.success(JSON.stringify(data.name) + ' has registered');
-                // xhr = $.ajax({
-                //     method : 'post',
-                //     url : '/admin/notifications',
-                //     success : function(response){
-                //         // toastr.success(data.name + ' has registered');
-                //         $('.notification-list').html(response);
-                //     }
-                // })
-            });
-        </script>
     </head>
 
     <body>

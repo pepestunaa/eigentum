@@ -16,4 +16,4 @@ COPY entrypoint.sh /usr/local/bin/
 RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 # Jalankan script setiap kali container up
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

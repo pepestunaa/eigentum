@@ -6,20 +6,12 @@ Referensi resmi: https://astryx.atmeta.com/
 
 ---
 
-## 1. Prinsip Utama
+## 1. Prinsip Utama & Aturan UI (Dilarang Melanggar)
 
-- Astryx adalah **satu-satunya** sumber kebenaran untuk komponen UI, token desain, tipografi, warna, spacing, dan tema di proyek ini.
-- **Jangan** membuat komponen UI dari nol menggunakan `<div>` mentah atau CSS custom jika komponen setara sudah tersedia di Astryx.
-- **Jangan** menebak nama prop, path import, atau perilaku komponen. Selalu verifikasi lewat CLI (`npx astryx …`) atau MCP server sebelum menulis kode.
-- **Jangan** menggunakan `style={{ ... }}` inline atau nilai "ajaib" (magic values) untuk warna/spacing/ukuran. Gunakan design token yang disediakan Astryx.
-- Semua styling mengikuti sistem token Astryx (lihat `npx astryx docs tokens`), bukan nilai hardcoded.
-
-Jika tidak yakin terhadap ketiga hal ini sebelum menulis kode:
-1. Path import yang benar untuk sebuah komponen,
-2. Cara mengatur perilaku non-trivial suatu komponen (misalnya membuat dialog non-dismissible),
-3. Prop apa yang dipakai komponen tertentu untuk data/items —
-
-maka **jalankan dulu perintah CLI di bawah**, jangan menebak.
+- **Astryx adalah satu-satunya sumber kebenaran** untuk komponen UI, token desain, tipografi, warna, spacing, dan tema.
+- **Dilarang Menggunakan Tag HTML Mentah untuk Layout:** Jangan membuat komponen UI dari nol menggunakan `<div>`, `<span>`, atau CSS kustom (termasuk class utilitas Tailwind/Bootstrap) jika komponen setara sudah tersedia di Astryx. Biarkan komponen Astryx yang menangani layout dan spacing.
+- **Dilarang Menebak:** Jangan menebak nama prop, path import, atau perilaku komponen. Selalu verifikasi lewat CLI (`npx astryx …`) sebelum menulis kode.
+- **Dilarang Memakai "Magic Values":** Jangan menggunakan `style={{ ... }}` inline atau nilai statis yang di-hardcode. Semua styling mengikuti sistem token Astryx (`var(--spacing-*)`, `var(--color-*)`), bukan nilai mentah.
 
 ---
 
@@ -30,24 +22,10 @@ npm install -D @astryxdesign/cli
 npx astryx init --features agents
 ```
 
-Perintah `init --features agents` akan:
-- Memasang paket yang diperlukan dan menyiapkan theming.
-- Menghasilkan/menyegarkan file konteks AI (file ini) berdasarkan versi Astryx yang terpasang.
-
-Jalankan ulang perintah ini setiap kali versi `@astryxdesign/core` naik, agar dokumentasi konteks tetap sinkron.
-
-Jika ingin menargetkan format tertentu:
-
-```bash
-npx astryx init --features agents --agent claude    # CLAUDE.md
-npx astryx init --features agents --agent cursor    # .cursorrules
-npx astryx init --features agents --agent codex     # AGENTS.md (Copilot, Codex, dll.)
-```
+Perintah `init --features agents` akan menyiapkan theming dan agent docs. Jalankan ulang perintah ini setiap kali versi `@astryxdesign/core` naik.
 
 ### Alias npm (disarankan)
-
-Agar CLI selalu dipanggil dengan path binari yang benar (agent sering menebak path yang salah), tambahkan di `package.json`:
-
+Di `package.json`:
 ```json
 "scripts": {
   "astryx": "node node_modules/@astryxdesign/cli/bin/astryx.mjs"
@@ -56,93 +34,62 @@ Agar CLI selalu dipanggil dengan path binari yang benar (agent sering menebak pa
 
 ---
 
-## 3. Alur Kerja Wajib Sebelum Menulis Kode UI
+## 3. Alur Kerja Pembuatan UI
 
-Sebelum menulis halaman atau komponen baru, ikuti 3 langkah ini secara berurutan:
+Sebelum menulis halaman atau komponen baru, ikuti urutan ini:
 
-1. **Cari pola halaman yang relevan sebagai referensi**
+1. **Cari pola halaman yang relevan** sebagai referensi:
    ```bash
    npx astryx template --list
    ```
-2. **Pelajari struktur layout template tersebut**
+2. **Pelajari struktur layout** template tersebut (skeleton):
    ```bash
    npx astryx template <nama-template> --skeleton
    ```
-3. **Baca props dan contoh penggunaan untuk setiap komponen yang akan dipakai**
+3. **Pahami Props komponen** yang akan dipakai:
    ```bash
    npx astryx component <NamaKomponen>
    ```
 
-Kalau belum yakin apakah yang dibutuhkan itu komponen, hook, template, atau topik docs, gunakan pencarian lintas-domain:
-
-```bash
-npx astryx search <kata-kunci>
-```
+*Tip Pencarian Khusus:* Jika kebingungan mencari nama komponen, jalankan `npx astryx search "<kata-kunci>"`.
 
 ---
 
-## 4. Referensi Cepat Perintah CLI
+## 4. Aturan Desain & Pemilihan Komponen (UI Guidelines)
+
+- **Kerangka Utama (Frame First):** Selalu tentukan kerangka luar halaman terlebih dahulu menggunakan `AppShell` (untuk halaman penuh) atau `Layout` + `LayoutPanel`. Jangan gunakan div polos.
+- **Data Padat (Dense Data):** Tampilkan data padat dalam baris (*edge-to-edge*) menggunakan `Table` atau `List` + `Item`.
+- **Penggunaan Card:** Komponen `Card` **hanya** untuk *dashboard widgets*, *galleries*, atau *settings groups*. **Dilarang** membungkus item *list* individu di dalam `Card`.
+- **Status & Badge:** Gunakan `StatusDot` atau `Token` untuk status data. `Badge` **hanya** untuk indikator angka (notifikasi) dan status terhitung, bukan untuk dekorasi visual.
+
+---
+
+## 5. Referensi Cepat Perintah CLI
 
 | Perintah      | Fungsi |
 | ------------- | ------ |
-| `init`        | Inisialisasi design system di proyek: install paket, setup theming, tambah agent docs |
-| `component`   | List komponen atau cetak dokumentasi detail, props, contoh, source |
-| `search`      | Cari komponen, hook, docs, dan template sekaligus (hasil diranking) |
-| `docs`        | Cetak dokumentasi referensi (tokens, theme, color, typography, spacing, dll.) |
+| `init`        | Inisialisasi design system di proyek |
+| `component`   | List komponen atau cetak dokumentasi detail |
+| `search`      | Cari komponen, hook, docs, dan template |
+| `docs`        | Cetak dokumentasi referensi (tokens, theme, dll.) |
 | `template`    | Sisipkan template halaman/blok ke proyek |
-| `hook`        | List hook dan cetak dokumentasi hook |
-| `swizzle`     | Salin source komponen ke proyek untuk kustomisasi mendalam |
-| `upgrade`     | Jalankan codemod untuk migrasi antar versi |
-| `theme build` | Compile file `defineTheme` menjadi CSS/JS produksi |
-| `discover`    | Temukan paket dan komponen eksternal |
-| `doctor`      | Diagnosis setup Astryx dan laporkan masalah beserta perbaikannya |
+| `swizzle`     | Salin source komponen ke proyek untuk kustomisasi |
+| `doctor`      | Diagnosis setup Astryx dan laporkan masalah |
 
-Contoh pemakaian umum:
-
-```bash
-npx astryx --help
-npx astryx search button
-npx astryx component Button
-npx astryx docs tokens
-npx astryx docs migration
-npx astryx template --list
-```
-
-### Flag global yang berguna untuk agent
-
-- `--json` — output berupa amplop JSON bertipe: `{ type, data }` (untuk error: `{ error, code, suggestions? }`). Selalu branch pada field `code`, jangan pada string `error` (bisa berubah kapan saja).
-- `--dense` — format ringkas hemat token, khusus dirancang untuk konteks AI. Gunakan ini saat menempelkan output CLI ke percakapan AI berbasis web.
-- `--detail <level>` — `brief` < `compact` < `full`.
-- `--lang <locale>` — `en`, `zh`, `dense`.
-
-Contoh output dense yang efisien untuk konteks AI:
-
-```bash
-npx astryx component Dialog --dense
-npx astryx docs styling --dense
-npx astryx docs tokens --dense
-```
+Gunakan flag global seperti `--json` atau `--dense` saat menempelkan output ke AI berbasis web untuk format ringkas hemat token.
 
 ---
 
-## 5. Diagnostik Setup
+## 6. Diagnostik Setup & MCP Server
 
-Jalankan sebelum mulai bekerja (aman dijalankan di mana saja, termasuk CI — read-only):
-
+**Diagnostik:**
+Jalankan sebelum mulai bekerja (read-only):
 ```bash
 npx astryx doctor
 ```
 
-Exit code `0` = tidak ada kegagalan (warning tetap boleh), `1` = ada kegagalan. Bisa dipakai langsung sebagai CI gate.
-
----
-
-## 6. MCP Server (opsional, untuk tool yang mendukung MCP)
-
-Astryx menyediakan MCP server sehingga AI tool bisa mencari dan membaca dokumentasi komponen secara langsung tanpa menempel output CLI secara manual.
-
-Tambahkan ke file konfigurasi MCP (format sama untuk Claude Desktop, Cursor, Windsurf, Cline, dll.):
-
+**MCP Server:**
+Astryx menyediakan MCP server agar AI tool bisa mencari docs langsung:
 ```json
 {
   "mcpServers": {
@@ -154,26 +101,22 @@ Tambahkan ke file konfigurasi MCP (format sama untuk Claude Desktop, Cursor, Win
 }
 ```
 
-Server ini mengekspos dua tool:
-- `search(query)` — menemukan komponen, topik docs, dan template lewat bahasa natural (mis. "dropdown menu", "pesan sukses").
-- `get(name)` — mengambil dokumentasi lengkap: props, usage, dan contoh.
-
 ---
 
-## 7. Aturan Kode (Do / Don't)
+## 7. Pemeriksaan Mandiri (Self-Check) Akhir & Aturan Kode
 
-**Lakukan:**
-- Import komponen dari `@astryxdesign/core` sesuai path yang dikonfirmasi lewat `npx astryx component <Nama>`.
-- Gunakan design token untuk warna, spacing, typography, shape, elevation, motion (`npx astryx docs tokens`).
-- Ikuti pola styling resmi Astryx (StyleX) — lihat `npx astryx docs styling`.
-- Gunakan template resmi (`npx astryx template <nama>`) sebagai titik awal halaman, lalu sesuaikan kontennya.
-- Cek ulang dengan `npx astryx doctor` setelah perubahan besar pada dependencies/tema.
+**Lakukan (Pemeriksaan Akhir):**
+- [ ] Import komponen dari `@astryxdesign/core` sesuai path dari CLI.
+- [ ] CSS global Astryx (`reset.css` & `astryx.css`) ter-import di *entry-point*.
+- [ ] Styling menggunakan token resmi Astryx (warna, margin, padding).
+- [ ] Gunakan template resmi Astryx sebagai titik awal halaman.
+- [ ] Jalankan `npx astryx doctor` setelah ada perubahan besar.
 
 **Jangan:**
-- Jangan menulis `<div>` polos untuk elemen interaktif yang punya padanan komponen Astryx (Button, Dialog, Selector, dll).
-- Jangan gunakan `style={{ ... }}` inline atau warna/ukuran hardcoded.
-- Jangan menebak nama prop atau perilaku komponen — verifikasi dulu.
-- Jangan mengedit source komponen `@astryxdesign/core` langsung; gunakan `swizzle` jika perlu kustomisasi mendalam.
+- Jangan menulis `<div>` / `<span>` polos untuk membungkus layout interaktif.
+- Jangan gunakan kode Hex (`#000000`) atau ukuran mentah (`16px`).
+- Jangan mencampur utilitas eksternal (Tailwind/xstyle) dengan Astryx.
+- Jangan menebak nama prop tanpa memverifikasi.
 
 ---
 
@@ -184,14 +127,12 @@ Server ini mengekspos dua tool:
 - Semua Token: https://astryx.atmeta.com/docs/tokens
 - Styling Components: https://astryx.atmeta.com/docs/styling
 - Theme System: https://astryx.atmeta.com/docs/theme
-- Working with AI (panduan resmi): https://astryx.atmeta.com/docs/working-with-ai
-- Daftar Komponen: https://astryx.atmeta.com/components
-- Template: https://astryx.atmeta.com/templates
+- Working with AI: https://astryx.atmeta.com/docs/working-with-ai
 - Repo GitHub: https://github.com/facebook/astryx
 
 ---
 
-*File ini adalah AGENTS.md kustom yang dibuat manual mengikuti dokumentasi resmi Astryx per Juli 2026. Untuk versi yang selalu sinkron dengan versi paket yang terpasang di proyek Anda, jalankan `npx astryx init --features agents` dan biarkan CLI men-generate/memperbarui file ini secara otomatis.*
+*File ini adalah AGENTS.md kustom yang dibuat manual mengikuti dokumentasi resmi Astryx per Juli 2026 dan telah dipadukan dengan pedoman antarmuka pengguna proyek.*
 
 <!-- ASTRYX:START -->
 Astryx v0.1.7 · 90+ components
