@@ -91,8 +91,8 @@ class UnitController extends Controller
 
     public function homeunit(Request $request)
     {
-        $units = Unit::filter($request->all())->paginate(16);
-        $newunits = Unit::orderBy('created_at', 'desc')->get();
+        $units = Unit::with(['specifications', 'properties.types'])->filter($request->all())->paginate(16);
+        $newunits = Unit::with(['specifications', 'properties.types'])->orderBy('created_at', 'desc')->get();
         $property = Property::all();
         $status = Status::all();
         $tables = (new Unit())->getTable();
@@ -107,8 +107,7 @@ class UnitController extends Controller
         })->pluck('name', 'id', 'regency_id');
 
         if ($units) {
-            return view('pages.page.home', compact('units', 'newunits', 'developer', 'property', 'status', 'types', 'regencies'));
-            // return view('pages.page.home', compact('units', 'newunits', 'developer', 'property', 'status', 'types', 'regencies'));
+            return inertia('Home', compact('units', 'newunits', 'developer', 'property', 'status', 'types', 'regencies'));
         }
     }
 
