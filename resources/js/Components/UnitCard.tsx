@@ -1,10 +1,8 @@
+/* Hallmark · genre: editorial · macrostructure: 08-photographic · feature: F6 Product card grid */
 import React from 'react';
-import { ClickableCard } from '@astryxdesign/core/ClickableCard';
-import { VStack } from '@astryxdesign/core/Stack';
-import { HStack } from '@astryxdesign/core/Stack';
+import { Link } from '@inertiajs/react';
+import { VStack, HStack } from '@astryxdesign/core/Stack';
 import { Text } from '@astryxdesign/core/Text';
-import { Heading } from '@astryxdesign/core/Heading';
-import { Button } from '@astryxdesign/core/Button';
 import { AspectRatio } from '@astryxdesign/core/AspectRatio';
 import { formatPrice } from '@/Helpers/formatPrice';
 import type { Unit } from '@/types';
@@ -15,14 +13,9 @@ interface UnitCardProps {
 
 export default function UnitCard({ unit }: UnitCardProps) {
   return (
-    <ClickableCard
-      label={unit.title}
-      href={`/pages/unit/${unit.id}`}
-      elevation="low"
-      padding={0}
-    >
-      <VStack gap="0">
-        <AspectRatio ratio="16/9" style={{ position: 'relative' }}>
+    <Link href={`/pages/unit/${unit.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+      <VStack gap="var(--spacing-3)" style={{ position: 'relative' }}>
+        <AspectRatio ratio="4/3" style={{ backgroundColor: 'var(--color-background-surface)', overflow: 'hidden' }}>
           <img
             src={unit.image ? `/storage/${unit.image}` : '/assets/pages/banner/home2.jpg'}
             alt={unit.title}
@@ -31,55 +24,40 @@ export default function UnitCard({ unit }: UnitCardProps) {
               height: '100%',
               objectFit: 'cover',
               display: 'block',
+              transition: 'transform 0.4s ease-out',
             }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           />
-          <HStack
-            gap="var(--spacing-2)"
-            style={{ position: 'absolute', bottom: 'var(--spacing-2)', right: 'var(--spacing-2)' }}
-          >
-            <Button variant="secondary" size="small">❤️</Button>
-            <Button variant="secondary" size="small">👁️</Button>
-          </HStack>
         </AspectRatio>
 
-        <VStack gap="var(--spacing-2)" style={{ padding: 'var(--spacing-4)' }}>
-          <Text size="small" color="secondary">
-            {unit.properties?.types?.name || 'Tipe'}
-          </Text>
-          <Heading
-            level={3}
-            size="medium"
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-          >
+        <VStack gap="var(--spacing-1)">
+          <HStack justify="space-between" align="center">
+            <Text size="small" color="secondary" style={{ fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {unit.properties?.types?.name || 'Unit'}
+            </Text>
+            <Text size="small" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
+              {formatPrice(unit.price)}
+            </Text>
+          </HStack>
+          
+          <Text size="large" style={{ fontFamily: 'var(--font-display, serif)', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {unit.title}
-          </Heading>
+          </Text>
 
-          <HStack gap="var(--spacing-3)" style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginTop: 'var(--spacing-1)' }}>
+          <HStack gap="var(--spacing-3)" style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
             {unit.specifications?.bedroom && (
-              <HStack gap="var(--spacing-1)" align="center">
-                <Text size="small">🛏️</Text>
-                <Text size="small" color="secondary">{unit.specifications.bedroom}</Text>
-              </HStack>
+              <Text size="small" color="secondary">{unit.specifications.bedroom} Bed</Text>
             )}
             {unit.specifications?.bathroom && (
-              <HStack gap="var(--spacing-1)" align="center">
-                <Text size="small">🛁</Text>
-                <Text size="small" color="secondary">{unit.specifications.bathroom}</Text>
-              </HStack>
+              <Text size="small" color="secondary">{unit.specifications.bathroom} Bath</Text>
             )}
             {unit.specifications?.building_area && (
-              <HStack gap="var(--spacing-1)" align="center">
-                <Text size="small">📐</Text>
-                <Text size="small" color="secondary">{unit.specifications.building_area} m²</Text>
-              </HStack>
+              <Text size="small" color="secondary">{unit.specifications.building_area}m²</Text>
             )}
           </HStack>
-
-          <Text weight="bold" color="primary" style={{ marginTop: 'var(--spacing-2)', fontSize: '1.125rem' }}>
-            {formatPrice(unit.price)}
-          </Text>
         </VStack>
       </VStack>
-    </ClickableCard>
+    </Link>
   );
 }

@@ -1,189 +1,140 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head } from '@inertiajs/react';
-import {
-  Section,
-  Heading,
-  Text,
-  Button,
-  VStack,
-  HStack,
-  Grid,
-  Carousel,
-} from '@astryxdesign/core';
-
-// Components
+import { motion } from 'framer-motion';
+import * as stylex from '@stylexjs/stylex';
 import MainLayout from '@/Layouts/MainLayout';
-import HeroCarousel from '@/Components/HeroCarousel';
-import ServiceCard from '@/Components/ServiceCard';
-import SectionHeading from '@/Components/SectionHeading';
-import UnitCard from '@/Components/UnitCard';
-import PropertyCard from '@/Components/PropertyCard';
+import Card from '@/Components/Card';
+import { colors, typography, spacing, layout } from '@/tokens.stylex';
+import type { Unit } from '@/types';
 
-// Types & Helpers
-import type { Unit, Property, HeroSlide, ServiceItem } from '@/types';
-import { formatPrice } from '@/Helpers/formatPrice';
+const styles = stylex.create({
+  hero: {
+    paddingTop: '10vh',
+    paddingBottom: spacing.xl,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    borderBottom: `1px solid ${colors.lineLight}`,
+  },
+  marquee: {
+    fontFamily: typography.fontDisplay,
+    fontSize: 'clamp(3rem, 8vw, 8rem)',
+    fontWeight: typography.weightBold,
+    lineHeight: 0.9,
+    letterSpacing: '-0.04em',
+    color: colors.inkDark,
+    margin: 0,
+    maxWidth: '1200px',
+  },
+  marqueeAccent: {
+    color: colors.accentLight,
+    fontStyle: 'italic',
+    fontWeight: typography.weightMedium,
+  },
+  subtitle: {
+    fontFamily: typography.fontMono,
+    fontSize: '0.875rem',
+    color: colors.inkDark,
+    opacity: 0.6,
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    marginTop: spacing.md,
+  },
+  section: {
+    padding: `${spacing.xl} ${spacing.md}`,
+    maxWidth: layout.maxWidth,
+    margin: '0 auto',
+  },
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: spacing.sm,
+    borderBottom: `1px solid ${colors.lineLight}`,
+    paddingBottom: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  sectionIndex: {
+    fontFamily: typography.fontMono,
+    fontSize: typography.step1,
+    color: colors.accentLight,
+    fontWeight: typography.weightBold,
+  },
+  sectionTitle: {
+    fontFamily: typography.fontDisplay,
+    fontSize: typography.step3,
+    fontWeight: typography.weightMedium,
+    color: colors.inkDark,
+    margin: 0,
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: spacing.lg,
+  }
+});
 
 interface HomeProps {
-  units: {
-    data: Unit[];
-    links: { url: string | null; label: string; active: boolean }[];
-  };
   newunits: Unit[];
-  developer: any[];
-  property: Property[];
-  status: any[];
-  types: { name: string }[];
-  regencies: any;
 }
 
-// Static data
-const heroSlides: HeroSlide[] = [
-  {
-    title: 'Properti Impian Anda',
-    subtitle: 'Eksplorasi Properti Berkualitas',
-    text: 'Jelajahi Pilihan Luas Properti di Lokasi Premium untuk Gaya Hidup Modern Anda',
-  },
-  {
-    title: 'Agen Properti',
-    subtitle: 'Agen Terpercaya dalam Mencari Properti Ideal',
-    text: 'Dapatkan panduan dan nasihat terbaik dari tim agen properti kami yang berpengalaman.',
-  },
-  {
-    title: 'Panduan Properti',
-    subtitle: 'Jelajahi Panduan tentang Properti',
-    text: 'Dengan panduan kami, Anda akan memahami bagaimana mencari dan menilai properti yang sesuai dengan kebutuhan.',
-  },
-];
+export default function Home({ newunits }: HomeProps) {
+  // Motion variants
+  const stagger = {
+    animate: { transition: { staggerChildren: 0.1 } }
+  };
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  };
 
-const services: ServiceItem[] = [
-  {
-    icon: '🔍',
-    title: 'Kemudahan Pencarian properti',
-    description: 'Pengguna bisa dengan mudah mencari properti yang diinginkan dengan fitur pencarian yang lengkap',
-  },
-  {
-    icon: '📊',
-    title: 'Lebih Banyak Pilihan',
-    description: 'Lebih banyak pilihan properti yang bisa dipilih, mulai dari rumah, apartemen, hingga properti komersial.',
-  },
-  {
-    icon: '📖',
-    title: 'Informasi Lengkap',
-    description: 'Informasi lengkap tentang properti yang dijual, mulai dari harga, lokasi, ukuran, fasilitas, dan lain sebagainya.',
-  },
-];
-
-export default function Home(props: HomeProps) {
-  const { units, newunits, property, types } = props;
-  const [activeFilter, setActiveFilter] = useState('ALL');
-
-  const filteredUnits = activeFilter === 'ALL' 
-    ? units?.data 
-    : units?.data?.filter((u) => u.properties?.types?.name === activeFilter);
+  const sampleProjects = newunits?.length > 0 ? newunits : [
+    { id: 1, name: 'Villa Azure', address: 'Seminyak, ID', description: 'Hunian eksklusif dengan sentuhan tropis modern.' },
+    { id: 2, name: 'The Horizon', address: 'Jakarta Selatan', description: 'Apartemen premium di pusat kawasan bisnis.' },
+    { id: 3, name: 'Oasis Residence', address: 'Bandung', description: 'Ketelatenan arsitektur di tengah sejuknya alam.' },
+  ];
 
   return (
     <MainLayout title="Beranda" currentPage="beranda">
-      {/* Hero Carousel */}
-      <HeroCarousel slides={heroSlides} />
-
-      {/* Services Section */}
-      <Section padding="var(--spacing-10) var(--spacing-4)" style={{ backgroundColor: 'var(--color-background-default)' }}>
-        <Grid columns={{ base: 1, md: 3 }} gap="var(--spacing-6)">
-          {services.map((srv, i) => (
-            <ServiceCard key={i} item={srv} />
-          ))}
-        </Grid>
-      </Section>
-
-      {/* Produk Kami (Collage) */}
-      <Section padding="var(--spacing-10) var(--spacing-4)" style={{ backgroundColor: 'var(--color-background-surface)' }}>
-        <VStack gap="var(--spacing-6)">
-          <SectionHeading title="PRODUK KAMI" subtitle="PROPERTI YANG KAMI TAWARKAN" />
-          
-          <Grid columns={{ base: 1, md: 12 }} gap="var(--spacing-4)">
-            <VStack style={{ gridColumn: 'span 5', height: '300px', borderRadius: 'var(--radius-element)', overflow: 'hidden' }}>
-              <img src="/assets/pages/banner/apartemen1.jpg" alt="Apartemen" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </VStack>
-            <VStack style={{ gridColumn: 'span 7', height: '300px', borderRadius: 'var(--radius-element)', overflow: 'hidden' }}>
-              <img src="/assets/pages/banner/home2.jpg" alt="Rumah" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </VStack>
-            <VStack style={{ gridColumn: 'span 7', height: '300px', borderRadius: 'var(--radius-element)', overflow: 'hidden' }}>
-              <img src="/assets/pages/banner/ruko1.jpg" alt="Ruko" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </VStack>
-            <VStack style={{ gridColumn: 'span 5', height: '300px', borderRadius: 'var(--radius-element)', overflow: 'hidden' }}>
-              <img src="/assets/pages/banner/villa1.jpg" alt="Villa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </VStack>
-          </Grid>
-        </VStack>
-      </Section>
-
-      {/* Properti Teratas (Grid with Filters) */}
-      <Section padding="var(--spacing-10) var(--spacing-4)" style={{ backgroundColor: 'var(--color-background-default)' }}>
-        <VStack gap="var(--spacing-6)">
-          <SectionHeading title="PROPERTI TERATAS" subtitle="PILIH PROPERTI" />
-          
-          <HStack gap="var(--spacing-2)" wrap="wrap">
-            <Button variant={activeFilter === 'ALL' ? 'primary' : 'secondary'} onClick={() => setActiveFilter('ALL')}>ALL</Button>
-            {types && types.map((type) => (
-              <Button key={type.name} variant={activeFilter === type.name ? 'primary' : 'secondary'} onClick={() => setActiveFilter(type.name)}>{type.name}</Button>
-            ))}
-          </HStack>
-
-          <Grid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap="var(--spacing-4)">
-            {filteredUnits && filteredUnits.map((unit) => (
-              <UnitCard key={unit.id} unit={unit} />
-            ))}
-          </Grid>
-        </VStack>
-      </Section>
-
-      {/* Properti Terbaru (Carousel of `property`) */}
-      <Section padding="var(--spacing-10) var(--spacing-4)" style={{ backgroundColor: 'var(--color-background-surface)' }}>
-        <VStack gap="var(--spacing-6)">
-          <SectionHeading title="PROPERTI TERBARU" subtitle="PILIH PROPERTI TERBARU KAMI" actionText="Lihat Semua" />
-          
-          <Carousel gap="var(--spacing-4)">
-            {property && property.map((prop) => (
-              <VStack key={prop.id} style={{ width: '300px', flexShrink: 0 }}>
-                <PropertyCard property={prop} />
-              </VStack>
-            ))}
-          </Carousel>
-        </VStack>
-      </Section>
-
-      {/* Developer Banner */}
-      <Section 
-        padding="var(--spacing-12) var(--spacing-4)" 
-        style={{ 
-          background: 'linear-gradient(135deg, var(--color-background-interactive) 0%, var(--color-background-brand-default, #2563eb) 100%)', 
-          color: 'white',
-          textAlign: 'center' 
-        }}
+      {/* HERO SECTION */}
+      <motion.section 
+        variants={stagger} initial="initial" animate="animate"
+        {...stylex.props(styles.hero)}
       >
-        <VStack gap="var(--spacing-6)" align="center">
-          <Heading level={1} size="display" style={{ color: 'white' }}>Jadilah Developer</Heading>
-          <Text size="large" style={{ color: 'rgba(255,255,255,0.9)', maxWidth: '600px' }}>
-            Kami Memiliki Diskon Terbaik Untuk Anda! Merencanakan strategi pemasaran untuk properti yang akan dijual.
-          </Text>
-          <Button variant="secondary" size="large" style={{ marginTop: 'var(--spacing-4)', color: 'var(--color-text-primary)' }}>Daftar Sekarang</Button>
-        </VStack>
-      </Section>
+        <motion.p variants={fadeInUp} {...stylex.props(styles.subtitle)}>
+          Listing Eksklusif 2026
+        </motion.p>
+        <motion.h1 variants={fadeInUp} {...stylex.props(styles.marquee)}>
+          Temukan Hunian <br/>
+          <span {...stylex.props(styles.marqueeAccent)}>Ideal Anda.</span>
+        </motion.h1>
+      </motion.section>
 
-      {/* Properti Lainnya (Carousel of `newunits`) */}
-      <Section padding="var(--spacing-10) var(--spacing-4)" style={{ backgroundColor: 'var(--color-background-default)' }}>
-        <VStack gap="var(--spacing-6)">
-          <SectionHeading title="PROPERTI LAINNYA" subtitle="TEMUKAN PROPERTI YANG ANDA BUTUHKAN" actionText="Lihat Semua" />
-          
-          <Carousel gap="var(--spacing-4)">
-            {newunits && newunits.map((unit) => (
-              <VStack key={unit.id} style={{ width: '300px', flexShrink: 0 }}>
-                <UnitCard unit={unit} />
-              </VStack>
-            ))}
-          </Carousel>
-        </VStack>
-      </Section>
+      {/* PROJECTS SECTION */}
+      <section {...stylex.props(styles.section)}>
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          whileInView={{ opacity: 1 }} 
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          {...stylex.props(styles.sectionHeader)}
+        >
+          <span {...stylex.props(styles.sectionIndex)}>01</span>
+          <h2 {...stylex.props(styles.sectionTitle)}>Properti Pilihan</h2>
+        </motion.div>
+
+        <div {...stylex.props(styles.grid)}>
+          {sampleProjects.map((unit, index) => (
+            <Card 
+              key={unit.id}
+              index={`No. 0${index + 1}`}
+              axis={unit.address}
+              title={unit.name}
+              description={unit.description || 'Properti premium dengan spesifikasi terbaik di kelasnya.'}
+            />
+          ))}
+        </div>
+      </section>
     </MainLayout>
   );
 }
