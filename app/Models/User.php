@@ -54,7 +54,8 @@ class User extends Authenticatable
 
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'favorites', 'unit_id', 'user_id');
+        // foreign pivot key first: users.id is stored in favorites.user_id
+        return $this->belongsToMany(Unit::class, 'favorites', 'user_id', 'unit_id');
     }
     public function agents()
     {
@@ -76,7 +77,7 @@ class User extends Authenticatable
     }
     public function favorites()
     {
-        return $this->HasFactory(Favorite::class);
+        return $this->hasMany(Favorite::class);
     }
 
     

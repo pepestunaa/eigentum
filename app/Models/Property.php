@@ -46,7 +46,36 @@ class Property extends Model
 
     public function agents(): BelongsToMany
     {
-        return $this->belongsToMany(Agent::class, 'property_agent', 'agent_id', 'property_id');
+        // foreign pivot key first: properties.id lives in property_agent.property_id
+        return $this->belongsToMany(Agent::class, 'property_agent', 'property_id', 'agent_id');
+    }
+
+    /**
+     * Whether the given user may modify this property: admins always,
+     * developers when the property belongs to their developer profile,
+     * agents when they are attached to it.
+     */
+    public function isOwnedBy($user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->role === 'admin') {
+            return true;
+        }
+
+        if ($user->role === 'developer') {
+            return (bool) $this->developers && $this->developers->users->contains($user);
+        }
+
+        if ($user->role === 'agent') {
+            return $this->agents->pluck('id')
+                ->intersect($user->agents->pluck('id'))
+                ->isNotEmpty();
+        }
+
+        return false;
     }
 
     public function provinces(): BelongsToMany

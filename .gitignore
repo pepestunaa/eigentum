@@ -18,3 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 /Todo.md
+
+# personal uploads must never be tracked
+/public/ktp
+/public/license

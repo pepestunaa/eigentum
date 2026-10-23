@@ -125,11 +125,11 @@ export default function Home({ newunits }: HomeProps) {
 
         <div {...stylex.props(styles.grid)}>
           {sampleProjects.map((unit, index) => (
-            <Card 
+            <Card
               key={unit.id}
               index={`No. 0${index + 1}`}
-              axis={unit.address}
-              title={unit.name}
+              axis={unit.properties?.address}
+              title={unit.title}
               description={unit.description || 'Properti premium dengan spesifikasi terbaik di kelasnya.'}
             />
           ))}

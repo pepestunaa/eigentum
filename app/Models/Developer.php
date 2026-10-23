@@ -89,9 +89,9 @@ class Developer extends Authenticatable
     {
 
         $query->when($filters['search'] ?? false, function ($query, $search) {
-            $query->where('comipany', 'like', '%' . $search . '%')
+            $query->where('company', 'like', '%' . $search . '%')
                 // ->orWhere('description','like','%'.$search.'%')
-                ->orWhere('email', 'like', '%' . $search . '%');
+                ->orWhere('company_email', 'like', '%' . $search . '%');
         });
 
         $query->when($filters['regency_id'] ?? false, function ($query, $regencyId) {

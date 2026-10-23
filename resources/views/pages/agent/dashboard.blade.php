@@ -86,7 +86,7 @@
                                             class="fas fa-edit edit-icon"></i></a>
                                 </div>x
                                 <div class="labeldelete" style="z-index: 100">
-                                    <form action="{{ route('property.destroy.agent', $property->id) }}" method="get"
+                                    <form action="{{ route('property.destroy.agent', $property->id) }}" method="post"
                                         class="d-inline">
                                         @csrf
                                         @method('DELETE')

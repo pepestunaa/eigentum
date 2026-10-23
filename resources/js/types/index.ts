@@ -12,6 +12,7 @@ export interface Property {
   id: number;
   types?: Type;
   title?: string;
+  address?: string;
   image?: string;
   price_range?: string;
 }

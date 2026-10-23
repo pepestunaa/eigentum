@@ -267,7 +267,7 @@
                                                                         
                                                                         @if (Auth::user()->role == 'developer' && Auth::user()->id == $property->developers->users->pluck('id')->first())
                                                                             <li>
-                                                                                <form action="{{ route('unit.destroy.developer', $unit->id) }}" method="get" class="d-inline">
+                                                                                <form action="{{ route('unit.destroy.developer', $unit->id) }}" method="post" class="d-inline">
                                                                                     @csrf
                                                                                     @method('DELETE')
                                                                                     <button class="btnfav" data-modal="modal" data-modal-id="#add-to-cart" 

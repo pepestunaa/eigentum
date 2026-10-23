@@ -22,6 +22,10 @@ class CallbackService extends Midtrans
  
     public function isSignatureKeyVerified()
     {
+        if (!$this->order || empty($this->notification->signature_key)) {
+            return false;
+        }
+
         return ($this->_createLocalSignatureKey() == $this->notification->signature_key);
     }
  
@@ -56,13 +60,16 @@ class CallbackService extends Midtrans
  
     protected function _createLocalSignatureKey()
     {
-        $orderId = $this->order->number;
+        // build the digest from the notification payload exactly as Midtrans
+        // hashed it, so decimal formatting of gross_amount cannot diverge from
+        // the value stored in our own database
+        $orderId = $this->notification->order_id;
         $statusCode = $this->notification->status_code;
-        $grossAmount = $this->order->total_price;
+        $grossAmount = $this->notification->gross_amount;
         $serverKey = $this->serverKey;
         $input = $orderId . $statusCode . $grossAmount . $serverKey;
         $signature = openssl_digest($input, 'sha512');
- 
+
         return $signature;
     }
  

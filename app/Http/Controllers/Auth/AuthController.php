@@ -33,17 +33,18 @@ class AuthController extends Controller
             'password' => $request->password,
         ];
 
-        if (Auth::attempt($credentials) && Auth::user()->role == "admin") {
-            return redirect('/admin')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($credentials) && Auth::user()->role == "developer") {
-            return redirect('/developer/dashboard')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($credentials) && Auth::user()->role == "agent") {
-            return redirect('/agent/dashboard')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($credentials) && Auth::user()->role == "user") {
-            return redirect(route('beranda'))->with('success', 'Berhasil Login');
-        } else {
-            return redirect('/');
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return match (Auth::user()->role) {
+                'admin' => redirect('/admin')->with('success', 'Berhasil Login'),
+                'developer' => redirect('/developer/dashboard')->with('success', 'Berhasil Login'),
+                'agent' => redirect('/agent/dashboard')->with('success', 'Berhasil Login'),
+                default => redirect(route('beranda'))->with('success', 'Berhasil Login'),
+            };
         }
+
+        return redirect('/login')->with('error', 'Email atau password salah');
     }
 
     public function register(Request $request)
@@ -56,43 +57,23 @@ class AuthController extends Controller
             'password' =>  'required|min:6'
         ]);
 
-        $data = [
-            'email' => $request->email,
-            'name' => $request->name,
-            'password' => bcrypt($request->password)
-        ];
-
         $user = User::create([
             'email' => $request->email,
             'name' => $request->name,
-            'password' => bcrypt($request->password)
+            'password' => bcrypt($request->password),
         ]);
 
-        $datalogin = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
+        Auth::login($user);
+        $request->session()->regenerate();
 
-        // $admin = User::where('role', 'admin')->first();
-        // NewUserRegistered::dispatch($user);
+        event(new UserRegistered($request->name));
 
-        $name = $request->name;
-
-
-        // $admin->notify(new NewUserRegistered($user));
-        event(new UserRegistered($name));
-
-        if (Auth::attempt($datalogin) && Auth::user()->role == "admin") {
-            return redirect('/admin')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($datalogin) && Auth::user()->role == "developer") {
-            return redirect('/developer/dashboard')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($datalogin) && Auth::user()->role == "agent") {
-            return redirect('/agent/dashboard')->with('success', 'Berhasil Login');
-        } elseif (Auth::attempt($datalogin) && Auth::user()->role == "user") {
-            return redirect(route('beranda'))->with('success', 'Berhasil Login');
-        } else {
-            return redirect(back());
-        }
+        return match (Auth::user()->role) {
+            'admin' => redirect('/admin')->with('success', 'Berhasil Login'),
+            'developer' => redirect('/developer/dashboard')->with('success', 'Berhasil Login'),
+            'agent' => redirect('/agent/dashboard')->with('success', 'Berhasil Login'),
+            default => redirect(route('beranda'))->with('success', 'Berhasil Login'),
+        };
     }
 
     public function logout()

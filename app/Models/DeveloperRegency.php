@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class DeveloperRegency extends Pivot
 {
     use SoftDeletes;
-    protected $table = 'developer_regency';
+    protected $table = 'developer_regencies';
     protected $fillable = ['developer_id', 'regency_id'];
 }

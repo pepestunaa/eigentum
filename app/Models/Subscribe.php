@@ -11,5 +11,5 @@ class Subscribe extends Model
 
     protected $table = 'subscribes';
 
-    protected $guaded = ['id'];
+    protected $guarded = ['id'];
 }

@@ -30,7 +30,7 @@
                             <br>
                             <div class="form-group text-end">
                                 <a type="button" class="btn btn-warning" href="{{ route('guide.index') }}">Back</a>
-                                <form action="{{ route('guide.destroy', $guide->id) }}" method="get" class="d-inline">
+                                <form action="{{ route('guide.destroy', $guide->id) }}" method="post" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-danger"

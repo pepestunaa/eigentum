@@ -100,7 +100,7 @@ class PropertyController extends Controller
                 'title'  => $request->title,
                 'description'   => $request->description,
                 'address'   => $request->address,
-                'image' => $$imageNames,
+                'image' => $imageNames[0],
                 'type_id'   => $request->type_id,
                 'developer_id'  => $developer->id,
                 // 'agent_id' => $randomAgentId,
@@ -147,7 +147,11 @@ class PropertyController extends Controller
         ]);
 
         // $user = Auth::user();
-        $developer = Auth::user()->developers;
+        $developer = Auth::user()->developers->first();
+
+        if (!$developer) {
+            return back()->with('error', 'Hanya developer yang dapat membuat properti.');
+        }
 
         $imageField = $request->file('image');
         $imageNames = [];
@@ -163,7 +167,7 @@ class PropertyController extends Controller
             'address'   => $request->address,
             'image' => $imageNames[0],
             'type_id'   => $request->type_id,
-            'developer_id'  => $developer->pluck('id')->first(),
+            'developer_id'  => $developer->id,
         ]);
 
 
@@ -197,11 +201,13 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         $units = Unit::where('property_id', $property->id)->get();
-        if (Auth::user()->role == "admin") {
+        $role = Auth::user()?->role;
+
+        if ($role == "admin") {
             return view('admin.property.detail', compact('property'));
-        } elseif (Auth::user()->role == "developer") {
+        } elseif ($role == "developer") {
             return view('pages.property.detail1', compact('property', 'units'));
-        } elseif (Auth::user()->role == "agent") {
+        } elseif ($role == "agent") {
             return view('pages.property.detail1', compact('property', 'units'));
         } else {
             return view('pages.property.detail1', compact('property', 'units'));
@@ -211,6 +217,8 @@ class PropertyController extends Controller
 
     public function edit(Property $property)
     {
+        abort_unless($property->isOwnedBy(Auth::user()), 403);
+
         if (Auth::user()->role == "admin") {
             return view('admin.property.edit', [
                 'property' => $property,
@@ -240,6 +248,8 @@ class PropertyController extends Controller
         ]);
 
         $property = Property::findOrfail($id);
+
+        abort_unless($property->isOwnedBy(Auth::user()), 403);
 
         $property->update([
             'title'  => $request->title,
@@ -275,6 +285,9 @@ class PropertyController extends Controller
     public function destroy(string $id)
     {
         $property = Property::findOrfail($id);
+
+        abort_unless($property->isOwnedBy(Auth::user()), 403);
+
         foreach ($property->units as $unit) {
             foreach ($unit->images() as $image) {
                 $imagePath = 'storage/' . $image->image;

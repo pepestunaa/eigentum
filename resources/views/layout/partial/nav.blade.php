@@ -108,7 +108,9 @@
                                 </li>
                                 <li class="navbar">
                                     <span class="material-icons icons-size">exit_to_app</span>
-                                    <a href="{{ route('logout') }}">Logout</a>
+                                    <form action="{{ route('logout') }}" method="post" style="display: inline;">@csrf
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
+                                    </form>
                                 </li>
                             </ul>
                         @elseif (Auth::user()->role == 'developer')
@@ -146,7 +148,9 @@
                                 </li> --}}
                                 <li>
                                     <span class="material-icons icons-size">exit_to_app</span>
-                                    <a href="{{ route('logout') }}">Logout</a>
+                                    <form action="{{ route('logout') }}" method="post" style="display: inline;">@csrf
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
+                                    </form>
                                 </li>
                             </ul>
                         @elseif (Auth::user()->role == 'admin')
@@ -165,7 +169,9 @@
                                 </li>
                                 <li>
                                     <span class="material-icons icons-size">exit_to_app</span>
-                                    <a href="{{ route('logout') }}">Logout</a>
+                                    <form action="{{ route('logout') }}" method="post" style="display: inline;">@csrf
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
+                                    </form>
                                 </li>
                             </ul>
                         @else
@@ -180,7 +186,9 @@
                                 </li>
                                 <li>
                                     <span class="material-icons icons-size">exit_to_app</span>
-                                    <a href="{{ route('logout') }}">Logout</a>
+                                    <form action="{{ route('logout') }}" method="post" style="display: inline;">@csrf
+                                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
+                                    </form>
                                 </li>
                             </ul>
                         @endif

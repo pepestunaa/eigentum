@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
@@ -14,7 +15,9 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': '/resources/js',
+            // must be a real filesystem path: vite-plugin-stylex joins it
+            // directly when resolving @/... stylex imports at build time
+            '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
         },
     },
     server: {

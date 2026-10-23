@@ -49,8 +49,8 @@ Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback'])
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/login', [AuthController::class, 'index'])->name('login.index');
-    Route::post('/createL', [AuthController::class, 'login']); //post login
-    Route::post('/createR', [AuthController::class, 'register']); //post register
+    Route::post('/createL', [AuthController::class, 'login'])->middleware('throttle:5,1'); //post login
+    Route::post('/createR', [AuthController::class, 'register'])->middleware('throttle:5,1'); //post register
 
     Route::group(['prefix' => '/session'], function () {
         Route::group(['prefix' => '/auth'], function () {
@@ -58,11 +58,11 @@ Route::middleware(['guest'])->group(function () {
             Route::group(['prefix' => '/user'], function () {
                 Route::group(['prefix' => '/signin'], function () {
                     Route::get('/', [SessionController::class, 'signinUser'])->name('signin.user');
-                    Route::post('/create', [AuthController::class, 'login']);
+                    Route::post('/create', [AuthController::class, 'login'])->middleware('throttle:5,1');
                 });
                 route::group(['prefix' => '/signup'], function () {
                     Route::get('/', [SessionController::class, 'signupuser'])->name('signup.user');
-                    Route::post('/create', [SessionController::class, 'postSignupUser']);
+                    Route::post('/create', [SessionController::class, 'postSignupUser'])->middleware('throttle:5,1');
                 });
             });
             //developer
@@ -73,25 +73,25 @@ Route::middleware(['guest'])->group(function () {
                 });
                 Route::group(['prefix' => '/signup'], function () {
                     Route::get('/', [DeveloperController::class, 'SignupDeveloper']);
-                    Route::post('/create', [DeveloperController::class, 'storeFront']);
+                    Route::post('/create', [DeveloperController::class, 'storeFront'])->middleware('throttle:5,1');
                 });
             });
             //agent
             Route::group(['prefix' => '/agent'], function () {
                 Route::group(['prefix' => '/signin'], function () {
                     Route::get('/', [AgentController::class, 'signinAgent']);
-                    Route::post('/create', [AgentController::class, 'postSigninAgent']);
+                    Route::post('/create', [AuthController::class, 'login'])->middleware('throttle:5,1');
                 });
                 Route::group(['prefix' => '/signup'], function () {
                     Route::get('/', [AgentController::class, 'signup']);
-                    Route::post('/create', [AgentController::class, 'storeFront'])->name('agent.store.auth');
+                    Route::post('/create', [AgentController::class, 'storeFront'])->middleware('throttle:5,1')->name('agent.store.auth');
                 });
             });
         });
     });
 });
 
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 Route::get('/', [UnitController::class, 'homeunit'])->name('beranda');
 
 // developer
@@ -110,7 +110,7 @@ Route::middleware(['auth', 'IsDeveloper'])->group(function () {
             Route::get('/{property}', [PropertyController::class, 'show'])->name('property.show.developer');
             Route::get('/edit/{property}', [PropertyController::class, 'edit'])->name('property.edit.developer');
             Route::put('/update/{property}', [PropertyController::class, 'update'])->name('property.update.developer');
-            Route::get('/destroy/{property}', [PropertyController::class, 'destroy'])->name('property.destroy.developer');
+            Route::delete('/destroy/{property}', [PropertyController::class, 'destroy'])->name('property.destroy.developer');
         });
 
         Route::group(['prefix' => '/unit'], function () {
@@ -119,7 +119,7 @@ Route::middleware(['auth', 'IsDeveloper'])->group(function () {
             Route::get('/{unit}', [UnitController::class, 'show'])->name('unit.show.developer');
             Route::get('/edit/{unit}', [UnitController::class, 'edit'])->name('unit.edit.developer');
             Route::put('/update/{unit}', [UnitController::class, 'update'])->name('unit.update.developer');
-            Route::get('/destroy/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy.developer');
+            Route::delete('/destroy/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy.developer');
         });
         Route::get('/history', [DeveloperController::class, 'history']);
 
@@ -157,7 +157,7 @@ Route::middleware(['auth', 'IsAgent'])->group(function () {
             Route::get('/{property}', [PropertyController::class, 'show'])->name('property.show.agent');
             Route::get('/edit/{property}', [PropertyController::class, 'edit'])->name('property.edit.agent');
             Route::put('/update/{property}', [PropertyController::class, 'update'])->name('property.update.agent');
-            Route::get('/destroy/{property}', [PropertyController::class, 'destroy'])->name('property.destroy.agent');
+            Route::delete('/destroy/{property}', [PropertyController::class, 'destroy'])->name('property.destroy.agent');
         });
 
         Route::group(['prefix' => '/unit'], function () {
@@ -166,7 +166,7 @@ Route::middleware(['auth', 'IsAgent'])->group(function () {
             Route::get('/{unit}', [UnitController::class, 'show'])->name('unit.show.agent');
             Route::get('/edit/{unit}', [UnitController::class, 'edit'])->name('unit.edit.agent');
             Route::put('/update/{unit}', [UnitController::class, 'update'])->name('unit.update.agent');
-            Route::get('/destroy/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy.agent');
+            Route::delete('/destroy/{unit}', [UnitController::class, 'destroy'])->name('unit.destroy.agent');
         });
     });
 });
@@ -175,7 +175,7 @@ Route::middleware(['auth', 'IsAgent'])->group(function () {
 Route::group(['prefix' => '/pages'], function () {
 
     Route::get('/notfound', function () {
-        return view('pages.page.notfound');
+        return view('pages.page.notFound');
     });
     Route::get('/profile', [AgentController::class, 'edit'])->name('user.profile');
 
@@ -202,10 +202,10 @@ Route::group(['prefix' => '/pages'], function () {
     //payment
     Route::get('/langganan', [SubscribeController::class, 'indexFront'])->name('langganan.index'); //list sub
     // Route::get('/langganan/{subscribe}', [SubscribeController::class, 'show'])->name('subscribe.lihat'); //detail sub
-    Route::post('/addtoorder/{subsId}', [OrderController::class, 'storeFront'])->name('subscribeid.store'); //masuk sub ke order
-    Route::get('/detailorder/{order}', [OrderController::class, 'showFront'])->name('detailorder'); //detail order
+    Route::post('/addtoorder/{subsId}', [OrderController::class, 'storeFront'])->middleware('auth')->name('subscribeid.store'); //masuk sub ke order
+    Route::get('/detailorder/{order}', [OrderController::class, 'showFront'])->middleware('auth')->name('detailorder'); //detail order
     // Route::get('/afterorder/{order}', [OrderController::class, 'show'])->name('afterorder'); //detail order
-    Route::post('/already/{developer}', [DeveloperController::class, 'updateSub'])->name('sub.already');
+    Route::post('/already/{developer}', [DeveloperController::class, 'updateSub'])->middleware('auth')->name('sub.already');
 
     Route::get('/notifikasi', function () {
         return view('pages.page.notification');
@@ -244,6 +244,7 @@ Route::middleware(['auth', 'IsAdmin:admin'])->group(function () {
         Route::get('/', [AdminController::class, 'index']);
         Route::get("/dashboard", [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/profile', [AdminController::class, 'show'])->name('profile.show');
+        Route::get('/notifications', [AdminController::class, 'notifications'])->name('admin.notifications');
 
         Route::resource('customer', CustomerController::class);
         Route::resource('agent', AgentController::class);
@@ -267,14 +268,13 @@ Route::middleware(['auth', 'IsAdmin:admin'])->group(function () {
     });
 });
 
-Route::get('/pdf-preview/{file}', [FilePreviewController::class, 'show'])->name('pdf.preview');
-Route::get('/admin/notifications', [AdminController::class, 'notifications'])->name('admin.notifications');
+Route::get('/pdf-preview/{file}', [FilePreviewController::class, 'show'])->middleware('auth')->name('pdf.preview');
 Route::get('regency', [IndoregionController::class, 'getregency'])->name('get.regency');
 Route::get('districts', [IndoregionController::class, 'getdistricts'])->name('get.districts');
 Route::get('villages', [IndoregionController::class, 'getvillages'])->name('get.villages');
 Route::post('favorite-add/{id}', [FavoriteController::class, 'store'])->name('favorite.add');
-Route::get('favorite-remove/{id}', [FavoriteController::class, 'destroy'])->name('favorite.remove');
-Route::get('favorite-removeall', [FavoriteController::class, 'destroyall'])->name('favorite.removeall');
+Route::post('favorite-remove/{id}', [FavoriteController::class, 'destroy'])->name('favorite.remove');
+Route::post('favorite-removeall', [FavoriteController::class, 'destroyall'])->name('favorite.removeall');
 Route::post('/payments/midtrans-notification', [PaymentCallbackController::class, 'receive']);
 Route::post('/payments/finish', [PaymentCallbackController::class, 'finish']);
 

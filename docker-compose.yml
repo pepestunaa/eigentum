@@ -12,7 +12,8 @@ services:
         volumes:
             - '.:/var/www/html'
         depends_on:
-            - mysql
+            mysql:
+                condition: service_healthy
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -23,16 +24,18 @@ services:
             MYSQL_DATABASE: '${DB_DATABASE}'
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'mysql-data:/var/lib/mysql'
         healthcheck:
+            # no credentials on the command line: "access denied" still
+            # proves the server is up, so the password stays out of `ps`
             test:
                 - CMD
                 - mysqladmin
                 - ping
-                - '-p${DB_PASSWORD}'
-            retries: 3
+                - '-h'
+                - '127.0.0.1'
+            retries: 10
             timeout: 5s
 volumes:
     mysql-data:

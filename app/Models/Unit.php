@@ -62,28 +62,12 @@ class Unit extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'favorites', 'user_id', 'unit_id');
+        // foreign pivot key first: units.id is stored in favorites.unit_id
+        return $this->belongsToMany(User::class, 'favorites', 'unit_id', 'user_id');
     }
 
-    public function provinces(): BelongsToMany
-    {
-        return $this->belongsToMany(Province::class, 'property_province', 'property_id', 'province_id');
-    }
-
-    public function regencies(): BelongsToMany
-    {
-        return $this->belongsToMany(Regency::class, 'property_regency', 'property_id', 'regency_id');
-    }
-
-    public function districts(): BelongsToMany
-    {
-        return $this->belongsToMany(District::class, 'property_district', 'property_id', 'district_id');
-    }
-
-    public function villages(): BelongsToMany
-    {
-        return $this->belongsToMany(Village::class, 'property_village', 'property_id', 'village_id');
-    }
+    // units carry no region pivots of their own — region filtering goes
+    // through the parent property (see scopefilter below)
 
     protected static $marks = [
         Favorite::class,
@@ -129,7 +113,7 @@ class Unit extends Model
 
 
         $query->when($filters['regency_id'] ?? false, function ($query, $regency_id) {
-            return $query->whereHas('regencies', function ($query) use ($regency_id) {
+            return $query->whereHas('properties.regencies', function ($query) use ($regency_id) {
                 $query->where('id', $regency_id);
             });
         });

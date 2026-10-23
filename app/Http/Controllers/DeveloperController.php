@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Type;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Owner;
 use App\Models\Status;
 use App\Models\Regency;
@@ -95,12 +96,27 @@ class DeveloperController extends Controller
         return view('admin.developer.approve', compact('developer'));
     }
 
-    public function updateSub($id)
+    public function updateSub(Request $request, $id)
     {
-        $data = Developer::find($id);
+        $user = $request->user();
+        $developer = Developer::findOrFail($id);
 
-        $data->subscribe = 'already';
-        $data->save();
+        if (!$developer->users->contains($user)) {
+            abort(403);
+        }
+
+        // the subscription is only granted when the Midtrans callback has
+        // actually marked one of this user's orders as paid
+        $hasPaidOrder = Order::where('user_id', $user->id)
+            ->where('payment_status', 2)
+            ->exists();
+
+        if (!$hasPaidOrder) {
+            return back()->with('error', 'Pembayaran belum terkonfirmasi.');
+        }
+
+        $developer->subscribe = 'already';
+        $developer->save();
 
         return redirect()->route('developer.dashboard');
     }
@@ -160,7 +176,7 @@ class DeveloperController extends Controller
                     'string',
                 ],
                 'address'   => 'required',
-                'license.*' => 'required|file|max:10240',
+                'license.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
                 'telp' => 'required|regex:/^[0-9+\-() ]+$/',
                 'name' => 'required',
                 'company_email' => 'required|email',
@@ -252,8 +268,8 @@ class DeveloperController extends Controller
             $developer->villages()->attach($request->villages_id);
 
             $developer = Developer::where('id', '=', $developer->id)->get();
-            Auth::login($user);
-            return redirect(route('developer.index'));
+
+            return redirect(route('developer.index'))->with('success', 'Developer berhasil dibuat');
         } catch (Exception $e) {
             \Illuminate\Support\Facades\Log::error($e->getMessage());
             return back()->with('error', 'Terjadi kesalahan pada sistem, silakan coba lagi.');
@@ -271,7 +287,7 @@ class DeveloperController extends Controller
                     'string',
                 ],
                 'address'   => 'required',
-                'license.*' => 'required|file|max:10240',
+                'license.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
                 'telp' => 'required|regex:/^[0-9+\-() ]+$/',
                 'name' => 'required',
                 'company_email' => 'required|email',
@@ -372,7 +388,7 @@ class DeveloperController extends Controller
     public function show($id)
     {
         $developer = Developer::findOrFail($id);
-        $user = User::findOrFail($id);
+        $user = $developer->users->first();
         $licenseFile = explode("|", $developer->license);
         return view('admin.developer.detail', compact('developer', 'licenseFile', 'user'));
     }
@@ -457,16 +473,22 @@ class DeveloperController extends Controller
                 $users->update([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'password' => bcrypt($request->password),
                 ]);
+
+                if ($request->filled('password')) {
+                    $users->update(['password' => bcrypt($request->password)]);
+                }
 
                 $developer->update([
                     'company'   => $request->company,
                     'company_email' => $request->company_email,
-                    'company_password' => bcrypt($request->company_password),
                     'address'   => $request->address,
                     'telp'  => $request->telp,
                 ]);
+
+                if ($request->filled('company_password')) {
+                    $developer->update(['company_password' => bcrypt($request->company_password)]);
+                }
 
                 $images = ['ktp', 'face'];
 
@@ -581,16 +603,22 @@ class DeveloperController extends Controller
                 $users->update([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'password' => bcrypt($request->password),
                 ]);
+
+                if ($request->filled('password')) {
+                    $users->update(['password' => bcrypt($request->password)]);
+                }
 
                 $developer->update([
                     'company'   => $request->company,
                     'company_email' => $request->company_email,
-                    'company_password' => bcrypt($request->company_password),
                     'address'   => $request->address,
                     'telp'  => $request->telp,
                 ]);
+
+                if ($request->filled('company_password')) {
+                    $developer->update(['company_password' => bcrypt($request->company_password)]);
+                }
 
                 $images = ['ktp', 'face'];
 

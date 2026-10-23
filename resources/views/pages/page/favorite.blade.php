@@ -105,7 +105,9 @@
 
                                             <a class="w-r__link btn--e-transparent-platinum-b-2" href="{{route('unit.show.user', $unit->id)}}">LIHAT</a>
 
-                                            <a class="w-r__link btn--e-transparent-platinum-b-10" href="{{route('favorite.remove', $unit->id)}}">HAPUS</a></div>
+                                            <form action="{{ route('favorite.remove', $unit->id) }}" method="post" class="d-inline">@csrf
+                                                <a class="w-r__link btn--e-transparent-platinum-b-10" href="#" onclick="event.preventDefault(); this.closest('form').submit();">HAPUS</a>
+                                            </form></div>
                                     </div>
                                 </div>
                             @endforeach
@@ -121,9 +123,11 @@
                                 <div class="route-box">
                                     <div class="route-box__g">
 
-                                        <a class="route-box__link" href="{{route('favorite.removeall')}}"><i class="fas fa-trash" style="margin-right: 10px;"></i>
+                                        <form action="{{ route('favorite.removeall') }}" method="post">@csrf
+                                            <a class="route-box__link" href="#" onclick="event.preventDefault(); this.closest('form').submit();"><i class="fas fa-trash" style="margin-right: 10px;"></i>
 
-                                            <span>CLEAR WISHLIST</span></a></div>
+                                            <span>CLEAR WISHLIST</span></a>
+                                        </form></div>
                                 </div>
                             </div>
                         </div>

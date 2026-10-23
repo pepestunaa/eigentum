@@ -82,6 +82,8 @@ class UnitController extends Controller
         $property = Property::findOrfail($propertyId);
         $status = Status::all();
 
+        abort_unless($property->isOwnedBy(Auth::user()), 403);
+
         if (Auth::user()->role == "admin") {
             return view('admin.unit.create', compact('property', 'status'));
         } else {
@@ -113,6 +115,10 @@ class UnitController extends Controller
 
     public function store(Request $request,  $propertyId)
     {
+        // outside the try: a 403 must not be swallowed by the catch below
+        $property = Property::findOrfail($propertyId);
+        abort_unless($property->isOwnedBy(Auth::user()), 403);
+
         try {
             $request->validate([
                 'title' => 'required',
@@ -156,11 +162,6 @@ class UnitController extends Controller
                 'etcimg.*.max' => 'Ukuran gambar maksimal 10MB',
                 'status_id.required' => 'Status tidak boleh kosong',
             ]);
-
-            $property = Property::findOrfail($propertyId);
-            if (!$property) {
-                return redirect()->back()->with('error', 'Property tidak ditemukan');
-            }
 
             $imageFieldName = $request->file('image');
             $imageNames = [];
@@ -252,6 +253,8 @@ class UnitController extends Controller
 
     public function edit(Unit $unit)
     {
+        abort_unless($unit->properties?->isOwnedBy(Auth::user()), 403);
+
         $properties = Property::all();
         $statuses = Status::all();
 
@@ -271,6 +274,8 @@ class UnitController extends Controller
         $data = $request->all();
 
         $unit = Unit::findOrfail($id);
+
+        abort_unless($unit->properties?->isOwnedBy(Auth::user()), 403);
 
         $request->validate([
             'title' => 'required',
@@ -308,8 +313,11 @@ class UnitController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
+            if ($unit->image) {
+                Storage::delete('public/' . $unit->image);
+            }
             $imageFieldName = $request->file('image');
-            $imageName = $imageFieldName->getClientOriginalExtension() . "." . $imageFieldName->getClientOriginalExtension();
+            $imageName = $imageFieldName->hashName();
             $imageFieldName->storeAs('public', $imageName);
             $unit->image = $imageName;
         }
@@ -323,7 +331,8 @@ class UnitController extends Controller
 
         $unit->save();
 
-        $specification = Specification::findOrfail($id);
+        // the specification belongs to the unit, not to whatever row shares its id
+        $specification = Specification::firstOrNew(['unit_id' => $unit->id]);
 
         $specification->update([
             'bedroom' => $request->bedroom,
@@ -336,11 +345,12 @@ class UnitController extends Controller
 
         $specification->save();
 
-        $image = Image::findOrFail($id);
+        // same: the image row belongs to the unit
+        $image = Image::firstOrNew(['unit_id' => $unit->id]);
         $columns = ['livingroomimg', 'bedroomimg', 'bathroomimg', 'kitchenimg', 'etcimg'];
 
         foreach ($columns as $column) {
-            $existingImages = explode('|', $image->{$column});
+            $existingImages = $image->{$column} ? array_filter(explode('|', $image->{$column})) : [];
 
             // Looping untuk mengupdate gambar yang sudah ada
             foreach ($existingImages as $index => $existingImage) {
@@ -373,7 +383,9 @@ class UnitController extends Controller
 
         $image->save();
 
-        $unit->statuses()->sync($request->input('status_id'));
+        if ($request->filled('status_id')) {
+            $unit->statuses()->sync($request->input('status_id'));
+        }
 
         // $property = Property::where('id', '=', $properties->id)->get();
         // return redirect(route('unit.show', $id));
@@ -382,6 +394,8 @@ class UnitController extends Controller
         } elseif (Auth::user()->role == "developer") {
             return redirect(route('property.show.developer', $unit->property_id));
         }
+
+        return redirect()->back()->with('success', 'Unit berhasil diperbarui');
         // } catch (Exception $e) {
         //     return $e;
         // }
@@ -391,10 +405,12 @@ class UnitController extends Controller
     {
         $unit = Unit::findOrfail($id);
 
-        $unit->delete();
+        abort_unless($unit->properties?->isOwnedBy(Auth::user()), 403);
+
         $unit->statuses()->detach();
         $unit->specifications()->delete();
         $unit->images()->delete();
+        $unit->delete();
 
         if (Auth::user()->role == "admin") {
             return redirect(route('unit.index'))->with('success', 'Data Deleted');

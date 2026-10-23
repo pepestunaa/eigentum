@@ -140,7 +140,7 @@ class AgentController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'role' => $request->role,
+                'role' => 'agent',
             ]);
 
             $agent = Agent::create([
@@ -230,7 +230,7 @@ class AgentController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role' => 'developer',
+            'role' => 'agent',
         ]);
 
         $user->agents()->attach($agent->id);
@@ -255,19 +255,25 @@ class AgentController extends Controller
 
         $agent = Agent::where('id', '=', $agent->id)->get();
 
-        Auth::login($user);
-        return redirect(route('agent.index'));
+        return redirect(route('agent.index'))->with('success', 'Agent berhasil dibuat');
         // } catch (Exception $e) {
         //     return $e;
         // }
 
     }
 
+    public function signinAgent()
+    {
+        return view('auth.signin');
+    }
+
     public function show(Agent $agent)
     {
-        if (Auth::user()->role == 'admin') {
+        $role = Auth::user()?->role;
+
+        if ($role == 'admin') {
             return view('admin.agent.detail', compact('agent'));
-        } elseif (Auth::user()->role == 'developer') {
+        } elseif ($role == 'developer') {
             return view('pages.agent.detail', compact('agent'));
         } else {
             return view('pages.user.detail', compact('agent'));
@@ -284,11 +290,13 @@ class AgentController extends Controller
 
     public function edit(Agent $agent)
     {
-        $user =  auth()->user();
-        $agents = $user->agents->first();
-        if (Auth::user()->role == 'admin') {
+        $user = auth()->user();
+        $agents = $user?->agents->first();
+        $role = $user?->role;
+
+        if ($role == 'admin') {
             return view('admin.agent.edit', compact('agent'));
-        } elseif (Auth::user()->role == 'agent') {
+        } elseif ($role == 'agent') {
             return view('pages.agent.profile', compact('agents'));
         } else {
             return view('pages.user.profile', compact('agents', 'user'));
@@ -430,8 +438,11 @@ class AgentController extends Controller
                 $users->update([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'password' => bcrypt($request->password),
                 ]);
+
+                if ($request->filled('password')) {
+                    $users->update(['password' => bcrypt($request->password)]);
+                }
 
                 $agent->update([
                     'address'   => $request->address,
@@ -439,13 +450,13 @@ class AgentController extends Controller
                 ]);
 
                 $images = ['ktp', 'face'];
-                foreach ($images as $key => $image) {
+                foreach ($images as $image) {
                     if ($request->hasFile($image)) {
-                        $imageName = $request->{$image}->hashName();
-                        $image_path = Storage::disk('public')->put($imageName, file_get_contents($request->{$image}));
-                        if (File::exists($image_path)) {
-                            File::delete($image_path);
+                        if ($agent->{$image}) {
+                            Storage::disk('public')->delete($agent->{$image});
                         }
+                        $imageName = $request->{$image}->hashName();
+                        $request->{$image}->storeAs('public', $imageName);
                         $agent->{$image} = $imageName;
                     }
                 }
@@ -500,8 +511,11 @@ class AgentController extends Controller
                 $users->update([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'password' => bcrypt($request->password),
                 ]);
+
+                if ($request->filled('password')) {
+                    $users->update(['password' => bcrypt($request->password)]);
+                }
 
                 $agent->update([
                     'address'   => $request->address,
@@ -509,13 +523,13 @@ class AgentController extends Controller
                 ]);
 
                 $images = ['ktp', 'face'];
-                foreach ($images as $key => $image) {
+                foreach ($images as $image) {
                     if ($request->hasFile($image)) {
-                        $imageName = $request->{$image}->hashName();
-                        $image_path = Storage::disk('public')->put($imageName, file_get_contents($request->{$image}));
-                        if (File::exists($image_path)) {
-                            File::delete($image_path);
+                        if ($agent->{$image}) {
+                            Storage::disk('public')->delete($agent->{$image});
                         }
+                        $imageName = $request->{$image}->hashName();
+                        $request->{$image}->storeAs('public', $imageName);
                         $agent->{$image} = $imageName;
                     }
                 }

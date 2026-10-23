@@ -26,7 +26,7 @@ class SessionController extends Controller
 
     public function signinUser()
     {
-        return view('auth.developer.signin');
+        return view('auth.user.signin');
     }
 
     public function signupUser()

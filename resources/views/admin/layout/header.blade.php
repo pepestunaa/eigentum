@@ -120,7 +120,7 @@
                     <a class="dropdown-item" href="#"><i class="align-middle me-1"
                             data-feather="help-circle"></i> Help Center</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{ route('logout') }}">Log out</a>
+                    <form action="{{ route('logout') }}" method="post"><a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">Log out</a>@csrf</form>
                 </div>
             </li>
         </ul>

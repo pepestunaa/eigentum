@@ -11,6 +11,14 @@ class PaymentCallbackController extends Controller
     public function receive()
     {
         $callback = new CallbackService;
+
+        if (!$callback->getOrder()) {
+            return response()
+                ->json([
+                    'error' => true,
+                    'message' => 'Order tidak ditemukan',
+                ], 404);
+        }
  
         if ($callback->isSignatureKeyVerified()) {
             $notification = $callback->getNotification();
@@ -48,7 +56,15 @@ class PaymentCallbackController extends Controller
         }
     }
 
-    public function finish(){
-        return redirect()->route('afterorder');
+    public function finish(Request $request)
+    {
+        $orderId = $request->input('order_id');
+        $order = $orderId ? Order::where('number', $orderId)->first() : null;
+
+        if ($order) {
+            return redirect()->route('detailorder', $order->id);
+        }
+
+        return redirect()->route('beranda');
     }
 }

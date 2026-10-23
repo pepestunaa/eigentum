@@ -34,7 +34,8 @@ class Agent extends Model
 
     public function properties(): BelongsToMany
     {
-        return $this->belongsToMany(Property::class, 'property_agent', 'property_id', 'agent_id');
+        // foreign pivot key first: agents.id lives in property_agent.agent_id
+        return $this->belongsToMany(Property::class, 'property_agent', 'agent_id', 'property_id');
     }
 
     public function provinces(): BelongsToMany

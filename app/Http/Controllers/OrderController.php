@@ -117,7 +117,19 @@ class OrderController extends Controller
 
     public function showFront(Order $order)
     {
-        $developer = Auth::user()->developers->first();
+        $user = Auth::user();
+
+        // order details and the snap token belong to the ordering user only
+        if (!$user || $order->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $developer = $user->developers->first();
+
+        if (!$developer) {
+            abort(403);
+        }
+
         $snapToken = $order->snap_token;
         if (empty($snapToken)) {
             // Jika snap token masih NULL, buat token snap dan simpan ke database
