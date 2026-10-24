@@ -14,16 +14,18 @@ if ! grep -q "^APP_KEY=base64:" .env; then
     php artisan key:generate
 fi
 
-# Jalankan migrasi yang belum diterapkan — TIDAK pernah menghapus data
+# Jalankan migrasi yang belum diterapkan — TIDAK pernah menghapus data.
+# MySQL's first boot (fresh volume) initializes for a couple of minutes with
+# networking disabled, so retry for up to ~5 minutes before giving up.
 n=0
 until php artisan migrate --force; do
     n=$((n+1))
-    if [ "$n" -ge 10 ]; then
-        echo "Migrasi gagal setelah 10 percobaan, container dihentikan"
+    if [ "$n" -ge 60 ]; then
+        echo "Migrasi gagal setelah 60 percobaan, container dihentikan"
         exit 1
     fi
-    echo "Database belum siap, mencoba lagi dalam 3 detik..."
-    sleep 3
+    echo "Database belum siap, mencoba lagi dalam 5 detik..."
+    sleep 5
 done
 
 # Seed hanya saat database masih kosong (boot pertama)
