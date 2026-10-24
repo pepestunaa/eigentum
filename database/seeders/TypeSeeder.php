@@ -6,6 +6,8 @@ use App\Models\Type;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+use Illuminate\Support\Facades\Schema;
+
 class TypeSeeder extends Seeder
 {
     /**
@@ -13,7 +15,9 @@ class TypeSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Type::truncate();
+        Schema::enableForeignKeyConstraints();
 
         $types = [
             'Housing',

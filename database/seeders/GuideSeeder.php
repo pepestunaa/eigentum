@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 
+use Illuminate\Support\Facades\Schema;
+
 class GuideSeeder extends Seeder
 {
     /**
@@ -17,7 +19,9 @@ class GuideSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Guide::truncate();
+        Schema::enableForeignKeyConstraints();
 
         for ($i = 0; $i < 6; $i++) {
             Guide::create([

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 
 
 
@@ -24,7 +25,9 @@ class AgentSeeder extends Seeder
      */
     public function run()
     {
+        Schema::disableForeignKeyConstraints();
         Agent::truncate();
+        Schema::enableForeignKeyConstraints();
         $agentUserIds = User::where('role', 'agent')->pluck('id');
         foreach ($agentUserIds as $userId) {
             $agent = Agent::create([

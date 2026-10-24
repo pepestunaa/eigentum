@@ -6,6 +6,7 @@ use App\Models\Customer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Schema;
 
 class CustomerSeeder extends Seeder
 {
@@ -14,7 +15,9 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Customer::truncate();
+        Schema::enableForeignKeyConstraints();
         
         for ($i = 0; $i < 10; $i++) {
             Customer::create([

@@ -14,6 +14,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Schema;
+
 class PropertySeeder extends Seeder
 {
     /**
@@ -21,7 +23,9 @@ class PropertySeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Property::truncate();
+        Schema::enableForeignKeyConstraints();
 
         $developerIds = Developer::pluck('id')->toArray();
         $typeIds = Type::pluck('id')->toArray();

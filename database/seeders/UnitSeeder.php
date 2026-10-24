@@ -22,10 +22,12 @@ class UnitSeeder extends Seeder
      */
     public function run()
     {
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         Unit::truncate();
         Image::truncate();
         Specification::truncate();
         UnitStatus::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         $propertyIds = Property::pluck('id')->toArray();
 

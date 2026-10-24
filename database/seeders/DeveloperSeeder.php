@@ -14,6 +14,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Schema;
+
 class DeveloperSeeder extends Seeder
 {
     /**
@@ -21,7 +23,9 @@ class DeveloperSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Developer::truncate();
+        Schema::enableForeignKeyConstraints();
         $developerUserIds = User::where('role', 'developer')->pluck('id');  
         foreach ($developerUserIds as $userId) {
             $licenseImages = $this->getImageUrls('license', 3);

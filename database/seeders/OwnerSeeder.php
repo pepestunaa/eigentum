@@ -10,6 +10,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Schema;
+
 class OwnerSeeder extends Seeder
 {
     /**
@@ -17,7 +19,9 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         Owner::truncate();
+        Schema::enableForeignKeyConstraints();
 
         $developerIds = Developer::all();
 
