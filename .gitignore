@@ -22,3 +22,14 @@ yarn-error.log
 # personal uploads must never be tracked
 /public/ktp
 /public/license
+
+# AI agent tooling — local only, never push
+/.agents
+/.claude
+/.serena
+/.opencode
+/.zcode
+/.codebase-memory
+AGENTS.md
+CLAUDE.md
+skills-lock.json
