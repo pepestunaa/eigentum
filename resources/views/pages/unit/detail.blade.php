@@ -1,533 +1,208 @@
-@extends('layout.main')
+@extends('layout.market')
+
+@section('title', $unit->title)
+
+@php
+    $galleryImages = [];
+    if ($images && $images->etcimg) {
+        $galleryImages = array_filter(explode('|', $images->etcimg));
+    }
+    $spec = $unit->specifications;
+    $unitStatus = $unit->statuses->first();
+    $statusClass = match(true) {
+        $unitStatus && str_contains(strtolower($unitStatus->name ?? ''), 'terjual') => 'k-badge--red',
+        $unitStatus && str_contains(strtolower($unitStatus->name ?? ''), 'sewa') => 'k-badge--amber',
+        default => 'k-badge--soft',
+    };
+    $unitPrice = (int) $unit->price;
+    $regencyNames = $unit->properties?->regencies ? $unit->properties->regencies()->pluck('name')->toArray() : [];
+    $developer = $developer ?? ($unit->properties->developers ?? null);
+    $waPhone = $developer?->phone ?? null;
+    $waNumber = $waPhone ? preg_replace('/\D/', '', $waPhone) : null;
+    if ($waNumber && !str_starts_with($waNumber, '62')) {
+        $waNumber = '62' . ltrim($waNumber, '0');
+    }
+@endphp
 
 @section('content')
-    <!DOCTYPE html>
-    <html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link href="images/favicon.png" rel="shortcut icon">
-
-        <!--====== Google Font ======-->
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
-
-        <!--====== Vendor Css ======-->
-        <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/vendor.css') }}">
-
-        <!--====== Utility-Spacing ======-->
-        <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/utility.css') }}">
-
-        <!--====== App ======-->
-        <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/app.css') }}">
-    </head>
-
-    <body class="config">
-
-        <div id="app">
-
-
-            <!--====== App Content ======-->
-            <div class="app-content">
-
-                <!--====== Section 1 ======-->
-                <div class="u-s-p-t-120">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-5">
-
-                                <!--====== Product Breadcrumb ======-->
-                                <div class="pd-breadcrumb u-s-m-b-30">
-                                    <ul class="pd-breadcrumb__list">
-                                        <li class="has-separator">
-
-                                            <a href="{{ route('beranda') }}">Home</a>
-                                        </li>
-                                        <li class="is-marked">
-
-                                            <a href="">Detail</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!--====== End - Product Breadcrumb ======-->
-
-
-                                <!--====== Product Detail Zoom ======-->
-                                <div class="pd u-s-m-b-30">
-                                    <div class="slider-fouc pd-wrap">
-                                        <div id="pd-o-initiate">
-                                            @if ($images && $images['etcimg'])
-                                                @php
-                                                    $imageArray = explode('|', $images['etcimg']);
-                                                @endphp
-                                                @foreach ($imageArray as $key => $image)
-                                                    @php
-                                                        $key += 2;
-                                                    @endphp
-                                                    <div class="pd-o-img-wrap" data-src="{{ asset('storage/' . $image) }}">
-
-                                                        <img class="u-img-fluid" src="{{ asset('storage/' . $image) }}"
-                                                            data-zoom-image="{{ asset('storage/' . $image) }}"
-                                                            alt="">
-                                                    </div>
-                                                @endforeach
-                                            @endif
-                                        </div>
-
-                                        <span class="pd-text">Klik untuk zoom lebih besar</span>
-                                    </div>
-                                    <div class="u-s-m-t-15">
-                                        <div class="slider-fouc">
-                                            <div id="pd-o-thumbnail">
-                                                @if ($images && $images['etcimg'])
-                                                    @php
-                                                        $imageArray = explode('|', $images['etcimg']);
-                                                    @endphp
-                                                    @foreach ($imageArray as $key => $image)
-                                                        @php
-                                                            $key += 2;
-                                                        @endphp
-                                                        <div>
-
-                                                            <img style="height: 90px; width: 120px; " class="u-img-fluid"
-                                                                src="{{ asset('storage/' . $image) }}" alt="">
-                                                        </div>
-                                                    @endforeach
-                                                @endif
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!--====== End - Product Detail Zoom ======-->
-                            </div>
-                            <div class="col-lg-7">
-
-                                <!--====== Product Right Side Details ======-->
-                                <div class="pd-detail">
-                                    <div>
-                                        <div class="u-s-m-b-15">
-                                            <div class="pd-detail__inline">
-
-                                                {{-- <span class="pd-detail__stock">{{ $unit->properties->types->name }}</span> --}}
-
-                                                @foreach ($unit->statuses as $status)
-                                                    <h2 class="btn-status"
-                                                        style="font-size:18px; display:inline-block;margin-top:42px; ">
-                                                        {{ $status->name }}</h2>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        <span
-                                            class="pd-detail__name"style="font-size:32px; margin-top: -30px;">{{ $unit->title }}</span>
-                                    </div>
-                                    <div>
-                                        <div class="pd-detail__inline">
-
-                                            <span class="pd-detail__price"
-                                                style="font-size: 24px;">Rp.{{ number_format($unit->price, 2) }}jt</span>
-                                        </div>
-
-                                        <div class="u-s-m-b-15">
-
-                                            <span class="pd-detail__preview-desc">{{ $unit->description }}</span>
-                                        </div>
-                                        <div class="u-s-m-b-15">
-                                            {{-- <div class="pd-detail__inline">
-
-                                                <span class="pd-detail__click-wrap"><i class="far fa-heart u-s-m-r-6"></i>
-
-                                                    <a href="signin.html">Tambahkan Ke Favorite</a>
-                                            </div> --}}
-                                        </div>
-                                        <div class="u-s-m-b-15">
-                                            <form class="pd-detail__form">
-                                                <div class="pd-detail-inline-2">
-                                                    <div class="u-s-m-b-15">
-                                                        {{-- @switch(Auth::user()->role)
-                                                            @case('agent')
-                                                                <form action="{{ route('accept.unit', ['unitId' => $unit->id]) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <button hidden type="submit">request</button>
-                                                                </form>
-                                                                <form action="{{ route('offer.submit', ['unitId' => $unit->id]) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <button type="submit">request</button>
-                                                                </form>
-                                                            @break
-
-                                                            @case('developer')
-                                                                <form action="{{ route('reject.unit', ['unitId' => $unit->id]) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <button hidden type="submit">reject</button>
-                                                                </form>
-                                                                <form action="{{ route('reject.unit', ['unitId' => $unit->id]) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <input type="hidden" value="accepted" name="status_unit">
-
-                                                                    <button type="submit">reject</button>
-                                                                </form>
-                                                                <form action="{{ route('accept.unit', ['unitId' => $unit->id]) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <input type="hidden" value="accepted" name="accepted">
-                                                                    <button type="submit">accept</button>
-                                                                </form>
-                                                            @break
-
-                                                            @default --}}
-                                                        <button href="https://web.whatsapp.com/"
-                                                            style="background-color: blue; border-radius:10px; color: white; border:none;">
-                                                            <div class="group-12-pM3 btn btn-primary" id="3:50">Tanya
-                                                                Agent</div>
-                                                        </button>
-                                                        {{-- @endswitch --}}
-
-
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="u-s-m-b-15">
-
-                                            <span class="pd-detail__label u-s-m-b-8">Kebijakan Produk:</span>
-                                            <ul class="pd-detail__policy-list">
-                                                <li><i class="fas fa-check-circle u-s-m-r-8"></i>
-
-                                                    <span>Keamanan Properti.</span>
-                                                </li>
-                                                <li><i class="fas fa-check-circle u-s-m-r-8"></i>
-
-                                                    <span>Informasi Properti.</span>
-                                                </li>
-                                                <li><i class="fas fa-check-circle u-s-m-r-8"></i>
-
-                                                    <span>Hak Cipta dan Penggunaan Materi.</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <!--====== End - Product Right Side Details ======-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--====== Product Detail Tab ======-->
-                    <div class="u-s-p-y-90">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="pd-tab">
-                                        <div class="u-s-m-b-30">
-                                            <ul class="nav pd-tab__list">
-                                                <li class="nav-item">
-
-                                                    <a class="nav-link active" data-toggle="tab"
-                                                        href="#pd-desc">DESCRIPTION</a>
-                                                </li>
-                                                {{-- <li class="nav-item">
-                                                    <a class="nav-link" data-toggle="tab" href="#pd-desc">
-                                                        <i class="fas fa-plus"></i> TAMBAH UNIT
-                                                    </a>
-                                                </li> --}}
-
-                                            </ul>
-                                        </div>
-                                        <div class="tab-content">
-
-                                            <!--====== Tab 1 ======-->
-                                            <div class="tab-pane fade show active" id="pd-desc">
-                                                <div class="pd-tab__desc">
-                                                    <div class="u-s-m-b-15">
-                                                        <p>{{ $unit->description }}</p>
-                                                    </div>
-                                                    <!-- <div class="u-s-m-b-30"><iframe src="https://www.youtube.com/embed/qKqSBm07KZk" allowfullscreen></iframe></div> -->
-                                                    <div class="u-s-m-b-30">
-                                                        <ul>
-                                                            <li><i class="fas fa-check u-s-m-r-8"></i>
-
-                                                                <span>Keamanan Properti.</span>
-                                                            </li>
-                                                            <li><i class="fas fa-check u-s-m-r-8"></i>
-
-                                                                <span>Informasi Properti.</span>
-                                                            </li>
-                                                            <li><i class="fas fa-check u-s-m-r-8"></i>
-
-                                                                <span>Hak Cipta dan Penggunaan Materi.</span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    <div class="u-s-m-b-15">
-                                                        <h4>INFORMASI PRODUK</h4>
-                                                    </div>
-                                                    <div class="u-s-m-b-15">
-                                                        <div class="pd-table gl-scroll">
-                                                            <table>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>Perusahaan</td>
-                                                                        <td>{{ Str::limit($unit->properties->developers->company, 15) }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Tipe Properti</td>
-                                                                        <td>{{ $unit->properties->types->name }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Lokasi</td>
-                                                                        <td>{{ implode(', ',$unit->properties->regencies()->pluck('name')->toArray()) }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Luas Bangunan</td>
-                                                                        <td>
-                                                                            {{ $unit->specifications->building_area }} m²
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Luas Tanah</td>
-                                                                        <td>
-                                                                            {{ $unit->specifications->surface_area }} m²
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Kamar Tidur</td>
-                                                                        <td>{{ $unit->specifications->bedroom }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Kamar Mandi</td>
-                                                                        <td>{{ $unit->specifications->bathroom }}</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Fasilitas</td>
-                                                                        <td>Kolam Renang, Gym</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Tahun Dibangun</td>
-                                                                        <td>2020</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Harga</td>
-                                                                        <td>Rp.{{ number_format($unit->price, 2) }}jt</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <!--====== End - Tab 1 ======-->
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--====== End - Product Detail Tab ======-->
-                    <div class="u-s-p-b-90">
-
-                        <!--====== Section Intro ======-->
-                        <div class="section__intro u-s-m-b-46">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="section__text-wrap">
-                                            <h1 class="section__heading u-c-secondary u-s-m-b-12">UNIT YANG DI
-                                                REKOMENDASIKAN</h1>
-
-                                            <span class="section__span u-c-grey">DAFTAR UNIT YANG TERCANTUM</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--====== End - Section Intro ======-->
-
-
-                        <!--====== Section Content ======-->
-                        <div class="section__content">
-                            <div class="container">
-                                <div class="slider-fouc">
-                                    <div class="owl-carousel product-slider" data-item="4">
-                                        @foreach ($units as $unit)
-                                            <div class="u-s-m-b-30">
-                                                <div class="product-o product-o--hover-on">
-                                                    <div class="product-o__wrap">
-
-                                                        <a class="aspect aspect--bg-grey aspect--square u-d-block"
-                                                            href="{{ route('unit.show.user', $unit->id) }}">
-
-                                                            <img class="aspect__img"
-                                                                src="{{ asset('storage/' . $unit->image) }}"
-                                                                alt=""></a>
-                                                        <div class="product-o__action-wrap">
-                                                            <ul class="product-o__action-list">
-                                                                <li>
-
-                                                                    <a data-modal="modal" data-modal-id="#quick-look"
-                                                                        data-tooltip="tooltip" data-placement="top"
-                                                                        title="Quick View"><i
-                                                                            class="fas fa-search-plus"></i></a>
-                                                                </li>
-                                                                <li>
-
-                                                                    <a data-modal="modal" data-modal-id="#add-to-cart"
-                                                                        data-tooltip="tooltip" data-placement="top"
-                                                                        title="Add to Cart"><i
-                                                                            class="fas fa-plus-circle"></i></a>
-                                                                </li>
-                                                                <li>
-
-                                                                    <a href="signin.html" data-tooltip="tooltip"
-                                                                        data-placement="top"
-                                                                        title="Tambahkan Ke Favorite"><i
-                                                                            class="fas fa-heart"></i></a>
-                                                                </li>
-                                                                <li>
-
-                                                                    <a href="signin.html" data-tooltip="tooltip"
-                                                                        data-placement="top"
-                                                                        title="Email me When the price drops"><i
-                                                                            class="fas fa-envelope"></i></a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-
-                                                    <span class="product-o__category">
-
-                                                        <a
-                                                            href="shop-side-version-2.html">{{ $unit->properties->types->name }}</a>
-                                                    </span>
-
-                                                    <span class="product-o__name">
-
-                                                        <a
-                                                            href="{{ route('unit.show.user', $unit->id) }}">{{ $unit->title }}</a></span>
-
-                                                    <span
-                                                        class="product-o__price">Rp.{{ number_format($unit->price, 2) }}jt</span>
-                                                </div>
-                                            </div>
-                                        @endforeach
-
-                                        {{-- <div class="product-o product-o--hover-on">
-                                            <div class="product-o__wrap">
-
-                                                <a class="aspect aspect--bg-grey aspect--square u-d-block"
-                                                    href="product-detail.html">
-
-                                                    <img class="aspect__img" src="/assets/pages/home/kota.jpg"
-                                                        alt=""></a>
-                                                <div class="product-o__action-wrap">
-                                                    <ul class="product-o__action-list">
-                                                        <li>
-
-                                                            <a data-modal="modal" data-modal-id="#quick-look"
-                                                                data-tooltip="tooltip" data-placement="top"
-                                                                title="Quick View"><i class="fas fa-search-plus"></i></a>
-                                                        </li>
-                                                        <li>
-
-                                                            <a data-modal="modal" data-modal-id="#add-to-cart"
-                                                                data-tooltip="tooltip" data-placement="top"
-                                                                title="Add to Cart"><i class="fas fa-plus-circle"></i></a>
-                                                        </li>
-                                                        <li>
-
-                                                            <a href="signin.html" data-tooltip="tooltip"
-                                                                data-placement="top" title="Tambahkan Ke Favorite"><i
-                                                                    class="fas fa-heart"></i></a>
-                                                        </li>
-                                                        <li>
-
-                                                            <a href="signin.html" data-tooltip="tooltip"
-                                                                data-placement="top"
-                                                                title="Email me When the price drops"><i
-                                                                    class="fas fa-envelope"></i></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-
-                                            <span class="product-o__category">
-
-                                                <a href="shop-side-version-2.html">Rumah</a></span>
-
-                                            <span class="product-o__name">
-
-                                                <a href="product-detail.html">Rumah Minimalis</a></span>
-
-                                            <span class="product-o__price">Rp. 1.300.000.000</span>
-                                        </div> --}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--====== End - Section Content ======-->
+<div class="k-container">
+
+    <nav class="k-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ route('beranda') }}">Beranda</a>
+        <span>/</span>
+        <a href="{{ route('unit.search.user') }}">Properti</a>
+        <span>/</span>
+        <span class="is-current">{{ $unit->title }}</span>
+    </nav>
+
+    <div class="k-detail">
+
+        <div>
+            <div class="k-gallery" style="margin-bottom: 1.5rem;">
+                <div class="k-gallery__main">
+                    @if (count($galleryImages))
+                        <img src="{{ asset('storage/' . $galleryImages[0]) }}" alt="{{ $unit->title }}">
+                    @else
+                        <img src="{{ $unit->image ? asset('storage/' . $unit->image) : asset('assets/pages/Home/unit1.jpg') }}"
+                             alt="{{ $unit->title }}">
+                    @endif
                 </div>
-                <!--====== End - Section 1 ======-->
+                @foreach (array_slice($galleryImages, 1, 2) as $thumb)
+                    <div class="k-gallery__thumb">
+                        <img src="{{ asset('storage/' . $thumb) }}" alt="{{ $unit->title }} — foto {{ $loop->iteration + 1 }}">
+                    </div>
+                @endforeach
             </div>
-            <!--====== End - App Content ======-->
 
+            <h1 style="font-size: clamp(1.6rem, 3.5vw, 2.4rem); margin-bottom: 0.5rem;">{{ $unit->title }}</h1>
+            <p class="k-card__loc" style="font-size: 0.95rem;">
+                <svg class="k-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                {{ implode(', ', $regencyNames) ?: ($unit->properties->address ?? 'Indonesia') }}
+                @if ($unit->properties?->types)
+                    · {{ $unit->properties->types->name }}
+                @endif
+            </p>
 
+            @if ($spec)
+                <div class="k-specs" style="margin: 1.5rem 0;">
+                    <div class="k-specs__item">
+                        <b>{{ $spec->bedroom ?? '—' }}</b>
+                        <span>Kamar tidur</span>
+                    </div>
+                    <div class="k-specs__item">
+                        <b>{{ $spec->bathroom ?? '—' }}</b>
+                        <span>Kamar mandi</span>
+                    </div>
+                    <div class="k-specs__item">
+                        <b>{{ $spec->building_area ?? '—' }}</b>
+                        <span>Luas bangunan (m²)</span>
+                    </div>
+                    <div class="k-specs__item">
+                        <b>{{ $spec->surface_area ?? '—' }}</b>
+                        <span>Luas tanah (m²)</span>
+                    </div>
+                </div>
+            @endif
 
+            <section class="k-section" style="padding-block: 1.5rem 0;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Deskripsi</h2>
+                <p style="color: var(--muted); max-width: 65ch;">{{ $unit->description }}</p>
+            </section>
+
+            <section style="padding-block: 1.5rem 0;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Informasi properti</h2>
+                <table class="k-table">
+                    <tbody>
+                        <tr>
+                            <th style="width: 40%;">Nomor kavling</th>
+                            <td class="k-mono">KVL-{{ str_pad($unit->id, 4, '0', STR_PAD_LEFT) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>{{ $unit->statuses->pluck('name')->implode(', ') ?: '—' }}</td>
+                        </tr>
+                        @if ($unit->properties?->developers)
+                            <tr>
+                                <th>Developer</th>
+                                <td>{{ $unit->properties->developers->company }}</td>
+                            </tr>
+                        @endif
+                        @if ($unit->properties?->types)
+                            <tr>
+                                <th>Tipe properti</th>
+                                <td>{{ $unit->properties->types->name }}</td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <th>Lokasi</th>
+                            <td>{{ implode(', ', $regencyNames) ?: ($unit->properties->address ?? '—') }}</td>
+                        </tr>
+                        @if ($spec?->floor)
+                            <tr>
+                                <th>Lantai</th>
+                                <td>{{ $spec->floor }}</td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <th>Harga</th>
+                            <td>Rp {{ number_format($unitPrice, 0, ',', '.') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
         </div>
-        <!--====== End - Main App ======-->
 
+        <aside class="k-detail__aside">
+            <div class="k-panel k-panel--price">
+                <span class="k-panel__price">Rp {{ number_format($unitPrice, 0, ',', '.') }}</span>
+                @if ($unitStatus)
+                    <div style="margin: 0.5rem 0 1rem;">
+                        <span class="k-badge {{ $statusClass }}">{{ $unitStatus->name }}</span>
+                    </div>
+                @endif
+                <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem;">
+                    Estimasi cicilan Rp {{ number_format((int) $pricePerMonth, 0, ',', '.') }}/bulan pada skema 24×.
+                </p>
 
-        <!--====== Google Analytics: change UA-XXXXX-Y to be your site's ID ======-->
-        <script>
-            window.ga = function() {
-                ga.q.push(arguments)
-            };
-            ga.q = [];
-            ga.l = +new Date;
-            ga('create', 'UA-XXXXX-Y', 'auto');
-            ga('send', 'pageview')
-        </script>
-        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+                @auth
+                    <button type="button" class="k-btn k-btn--outline k-btn--full {{ $unit->users->contains(Auth::id()) ? 'is-active' : '' }}"
+                            data-fav="{{ $unit->id }}" aria-pressed="false" style="margin-bottom: 0.6rem;">
+                        <svg class="k-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09A5.99 5.99 0 0 1 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"/>
+                        </svg>
+                        Simpan ke favorit
+                    </button>
+                @else
+                    <a class="k-btn k-btn--outline k-btn--full" href="{{ route('signin.user') }}" style="margin-bottom: 0.6rem;">
+                        Masuk untuk menyimpan
+                    </a>
+                @endauth
 
-        <!--====== Vendor Js ======-->
-        <script src="{{ asset('css/Lib/fix/js/vendor.js') }}"></script>
+                @if ($waNumber)
+                    <a class="k-btn k-btn--solid k-btn--full"
+                       href="https://wa.me/{{ $waNumber }}?text={{ urlencode('Halo, saya tertarik dengan unit ' . $unit->title . ' (KVL-' . str_pad($unit->id, 4, '0', STR_PAD_LEFT) . ')') }}"
+                       target="_blank" rel="noopener">
+                        Tanya agen
+                    </a>
+                @else
+                    <a class="k-btn k-btn--solid k-btn--full" href="{{ route('agent.search.user') }}">Cari agen</a>
+                @endif
+            </div>
 
-        <!--====== jQuery Shopnav plugin ======-->
-        <script src="{{ asset('css/Lib/fix/js/jquery.shopnav.js') }}"></script>
-
-        <!--====== App ======-->
-        <script src="{{ asset('css/Lib/fix/js/app.js') }}"></script>
-
-        <!--====== Noscript ======-->
-        <noscript>
-            <div class="app-setting">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="app-setting__wrap">
-                                <h1 class="app-setting__h1">JavaScript dinonaktifkan di browser Anda.</h1>
-
-                                <span class="app-setting__text">Aktifkan JavaScript di browser Anda atau tingkatkan ke
-                                    browser yang mendukung JavaScript.</span>
-                            </div>
+            @if ($developer)
+                <div class="k-panel">
+                    <div class="k-agent">
+                        <span class="k-avatar" aria-hidden="true">🏢</span>
+                        <div style="min-width: 0;">
+                            <div class="k-agent__name">{{ $developer->company ?? 'Developer' }}</div>
+                            <div class="k-agent__meta">Developer properti terverifikasi</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </noscript>
-    </body>
+            @endif
+        </aside>
+    </div>
 
-    </html>
+    @php $related = $units->reject(fn ($u) => $u->id === $unit->id)->take(4); @endphp
+    @if ($related->count())
+        <section class="k-section" aria-labelledby="k-related">
+            <div class="k-sec-head">
+                <h2 id="k-related">Unit lain yang mungkin cocok</h2>
+                <a class="k-sec-head__link" href="{{ route('unit.search.user') }}">
+                    Lihat semua
+                    <svg class="k-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M5 12h14m-6-6 6 6-6 6"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="k-grid">
+                @foreach ($related as $relatedUnit)
+                    @include('layout.partial.card-unit', ['unit' => $relatedUnit])
+                @endforeach
+            </div>
+        </section>
+    @endif
+</div>
 @endsection

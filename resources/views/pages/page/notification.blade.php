@@ -1,149 +1,47 @@
-@extends('layout.main')
+@extends('layout.market')
+
+@section('title', 'Notifikasi')
 
 @section('content')
+<div class="k-container" style="max-width: 760px; padding-block: var(--s-5) var(--s-7);">
 
-<!DOCTYPE html>
-<html lang="en">
+    <nav class="k-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ route('beranda') }}">Beranda</a>
+        <span>/</span>
+        <span class="is-current">Notifikasi</span>
+    </nav>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eigentum</title>
-    <!-- css -->
-        <link href="/css/pages/notification.css" rel="stylesheet">
-    <!-- icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-</head>
-
-<body>
-    <div class="wrapper" style="margin-top: 90px;">
-        <div class="top">
-            <div class="day">
-                Hari Ini
-            </div>
-            <div class="date">
-
-            </div>
-        </div>
-        <header>
-            <div class="notification_box">
-                <h2 class="title">Notifikasi</h2>
-                <span id="notifications">4</span>
-            </div>
-            <p id="mark_as_all">Tandai semua telah dibaca</p>
-        </header>
-
-        <section class="hero">
-            <div class="notification_card unseen">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong>isi notifikasi<strong style="margin-left: 5px;" class="link">link notifikasi</strong>!
-                    </p>
-                    <p class="time">1 jam yang lalu</p>
-                    <p class="seen">terkirim
-                        <span><i class='bx bx-check'></i></span>
-                    </p>
-                </div>
-                <div class="bell"><i class='bx bx-bell'></i></div>
-            </div>
-            <div class="notification_card unseen">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong> isi notifikasi
-                    </p>
-                    <p class="time">2 jam yang lalu</p>
-                    <p class="seen">terkirim
-                        <span><i class='bx bx-check'></i></span>
-                    </p>
-                </div>
-                <div class="bell"><i class='bx bx-bell'></i></div>
-
-            </div>
-            <div class="notification_card unseen">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong>isi notifikasi<strong style="margin-left: 5px;" class="link">link notifikasi</strong>!
-                    </p>
-                    <p class="time">3 jam yang lalu</p>
-                    <p class="seen">terkirim
-                        <span><i class='bx bx-check'></i></span>
-                    </p>
-                </div>
-                <div class="bell"><i class='bx bx-bell'></i></div>
-
-            </div>
-            <div class="notification_card unseen">
-                <div class="message_card">
-                    <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                    <div class="notification_info">
-                        <p class="user_activity">
-                            <strong style="margin-right: 5px;">Nama</strong> isi notifikasi
-                        </p>
-                        <p class="time">4 jam yang lalu</p>
-                        <p class="seen">terkirim
-                            <span><i class='bx bx-check'></i></span>
-                        </p>
-                    </div>
-                </div>
-                <div class="bell"><i class='bx bx-bell'></i></div>
-            </div>
-            <div class="message">
-                <div class="day">
-                    Kemarin
-                </div>
-                <div class="date-yesterday">
-
-                </div>
-            </div>
-            <div class="notification_card">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong> isi notifikasi
-                    </p>
-                    <p class="time">1 hari yang lalu</p>
-                    <p class="seen">terlihat
-                        <span><i class='bx bx-check-double'></i></span>
-                    </p>
-                </div>
-            </div>
-            <div class="notification_card">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong>isi notifikasi<strong style="margin-left: 5px;" class="link">link notifikasi</strong>!
-                    </p>
-                    <p class="time">2 hari yang lalu</p>
-                    <p class="seen ">terlihat
-                        <span><i class='bx bx-check-double'></i></span>
-                    </p>
-                </div>
-            </div>
-            <div class="notification_card">
-                <img src="/storage/houcine-ncib-B4TjXnI0Y2c-unsplash.jpg" alt="">
-                <div class="notification_info">
-                    <p class="user_activity">
-                        <strong style="margin-right: 5px;">Nama</strong>isi notifikasi
-                    </p>
-                    <p class="time">2 hari yang lalu</p>
-                    </p>
-                    <p class="seen">terlihat
-                        <span><i class='bx bx-check-double'></i></span>
-                    </p>
-                </div>
-            </div>
-        </section>
+    <div class="k-sec-head">
+        <h1 style="font-size: clamp(1.5rem, 3vw, 2rem);">Notifikasi</h1>
+        <button type="button" class="k-btn k-btn--outline k-btn--sm" onclick="document.querySelectorAll('.k-notif').forEach(n => n.dataset.unseen = 'false'); this.closest('.k-sec-head').querySelector('.k-catalog__count').textContent = '0 belum dibaca';">
+            Tandai semua telah dibaca
+        </button>
     </div>
 
-
-<!-- script link -->
-    <script src="/js/pages/notification.js"></script>
-</body>
-
-</html>
-
+    <div style="display: grid; gap: 0.75rem; margin-bottom: var(--s-7);">
+        @foreach ([
+            ['name' => 'Nama', 'text' => 'membalas pertanyaanmu pada listing', 'link' => 'properti', 'time' => '1 jam yang lalu', 'unseen' => true],
+            ['name' => 'Nama', 'text' => 'menambahkan listing baru', 'link' => '', 'time' => '2 jam yang lalu', 'unseen' => true],
+            ['name' => 'Nama', 'text' => 'mengirim pesan kepadamu', 'link' => '', 'time' => '5 jam yang lalu', 'unseen' => true],
+            ['name' => 'Nama', 'text' => 'memperbarui harga listing', 'link' => 'properti', 'time' => '1 hari yang lalu', 'unseen' => true],
+            ['name' => 'Nama', 'text' => 'menyukai listingmu', 'link' => '', 'time' => '2 hari yang lalu', 'unseen' => false],
+        ] as $notif)
+            <div class="k-panel k-notif" data-unseen="{{ $notif['unseen'] ? 'true' : 'false' }}"
+                 style="display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; {{ $notif['unseen'] ? 'border-left: 3px solid var(--green);' : '' }}">
+                <div style="flex: 1; min-width: 0;">
+                    <p style="margin: 0; font-size: 0.92rem;">
+                        <b>{{ $notif['name'] }}</b> {{ $notif['text'] }}
+                        @if ($notif['link'])
+                            <a href="{{ route('unit.search.user') }}" style="color: var(--green-ink); font-weight: 600;">{{ $notif['link'] }}</a>
+                        @endif
+                    </p>
+                    <p style="margin: 0.15rem 0 0; font-size: 0.8rem; color: var(--muted);">{{ $notif['time'] }}</p>
+                </div>
+                <span class="k-badge {{ $notif['unseen'] ? 'k-badge--soft' : 'k-badge--neutral' }}">
+                    {{ $notif['unseen'] ? 'Baru' : 'Dibaca' }}
+                </span>
+            </div>
+        @endforeach
+    </div>
+</div>
 @endsection

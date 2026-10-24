@@ -1,105 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layout.market')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Tambahkan link ini untuk menghubungkan library Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/auth/user/login.css">
-</head>
+@section('title', 'Masuk')
 
+@section('content')
+<div class="k-container" style="display: grid; place-items: center; min-height: calc(100vh - 64px - 300px); padding-block: var(--s-7);">
+    <div style="width: min(420px, 100%);">
+        <div class="k-panel" style="padding: var(--s-6) var(--s-5);">
+            <a class="k-header__logo" href="{{ route('beranda') }}" style="margin-bottom: 1.5rem;">
+                <span class="k-header__logo-mark">E</span>
+                Eigentum
+            </a>
+            <h1 style="font-size: 1.7rem; margin-bottom: 0.25rem;">Masuk</h1>
+            <p style="color: var(--muted); margin: 0 0 1.5rem; font-size: 0.92rem;">
+                Belum punya akun? <a href="/session/auth/user/signup/" style="color: var(--green-ink); font-weight: 600;">Daftar</a>
+            </p>
 
-<body>
-
-
-    <section class="vh-100">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-6 text-black">
-                    <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-n5">
-                        <a id="loginback" href=route('beranda')>Back</a>
-                        <form action="/session/auth/user/signin/create" method="POST">
-                            @csrf
-                            <img class="mb-4" src="/assets/pages/login/logo_1.png" alt="">
-
-                            <span class="h1 fw-regular mb-0" style="color: #0c40e8;">Eigentum
-                            </span>
-                            <h1 class="h1 fw-normal text-dark" id="masuk009">Masuk</h1>
-                            <h6 class="h6 fw-normal text-dark" id="masuk026">Belum punya akun? <a
-                                    href="/session/auth/user/signup/" class="text-dark " id="adkjslf">Sign
-                                    up</a></h6>
-                            <div class="form-floating">
-                                <input type="email" value="{{ Session::get('email') }}" name="email" id="email"
-                                    class="form-control" placeholder="name@example.com">
-                                <label for="email">Email address</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Password">
-                                <label for="password">Password</label>
-                            </div>
-
-
-                            <button class="w-100 btn btn-lg btn-primary" id="loginbutton" type="submit">Sign
-                                In</button>
-                            <button class="w-100 mt-2 btn btn-lg btn-primary" id="jamal009" type="submit">
-                                <img id="googleicon" src="/assets/pages/login/google.png" alt="">
-                                Lanjutkan dengan google
-                            </button>
-                            <pre><p id="privacy_police">you agree to be bound by these <u> Terms of Service</u> and our
-                                <u>Privacy Policy.</u></p></pre>
-                        </form>
-
-                    </div>
-
+            @if ($errors->any())
+                <div class="k-alert k-alert--error">
+                    {{ $errors->first() }}
                 </div>
-                <div class=" col-sm-6 px-0 d-flex d-sm-block">
-                    <img id="image1009" src="/assets/pages/login/Component 169-min-min.svg" alt="image 1">
+            @endif
+
+            <form action="/session/auth/user/signin/create" method="POST">
+                @csrf
+                <div class="k-field">
+                    <label class="k-label" for="email">Email</label>
+                    <input class="k-input" type="email" id="email" name="email" required
+                           value="{{ old('email', Session::get('email')) }}" placeholder="nama@email.com">
                 </div>
+                <div class="k-field">
+                    <label class="k-label" for="password">Kata sandi</label>
+                    <input class="k-input" type="password" id="password" name="password" required
+                           placeholder="Minimal 6 karakter">
+                </div>
+                <button type="submit" class="k-btn k-btn--solid k-btn--full k-btn--lg">Masuk</button>
+            </form>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0;">
+                <span style="flex: 1; height: 1px; background: var(--line);"></span>
+                <span style="font-size: 0.78rem; color: var(--muted);">atau</span>
+                <span style="flex: 1; height: 1px; background: var(--line);"></span>
             </div>
+
+            <a class="k-btn k-btn--outline k-btn--full" href="/auth/google/redirect">
+                <svg class="k-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.2-2.2H12v4.2h6.6c-.1 1.1-.8 2.8-2.4 3.9l3.8 2.9c2.2-2.1 3.5-5.1 3.5-8.8Z"/>
+                    <path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.8-2.9c-1 .7-2.4 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5l-3.9 3C3.2 21.3 7.3 24 12 24Z"/>
+                    <path fill="#FBBC05" d="M5.2 14.4c-.2-.7-.4-1.5-.4-2.4 0-.8.1-1.6.4-2.4l-4-3.1C.5 8.2 0 10 0 12s.5 3.8 1.3 5.4l3.9-3Z"/>
+                    <path fill="#EA4335" d="M12 4.7c2.2 0 3.7.9 4.5 1.7l3.3-3.2C17.9 1.2 15.2 0 12 0 7.3 0 3.2 2.7 1.3 6.6l4 3.1c1-2.9 3.6-5 6.7-5Z"/>
+                </svg>
+                Lanjutkan dengan Google
+            </a>
+
+            <p style="font-size: 0.78rem; color: var(--muted); margin: 1.25rem 0 0; line-height: 1.5;">
+                Dengan masuk, kamu menyetujui Ketentuan Layanan dan Kebijakan Privasi Eigentum.
+            </p>
         </div>
-    </section>
-    <script>
-        // Daftar sumber gambar
-        var daftarGambar = [
-            "/assets/pages/login/Component 169-min-min.svg",
-            "/assets/pages/login/Component 170-min-min.svg",
-            "/assets/pages/login/Component 171-min-min.svg",
-            "/assets/pages/login/Component 172-min-min.svg",
-        ];
-
-        // Mendapatkan elemen gambar
-        var gambar = document.getElementById("image1009");
-
-        // Mengatur indeks awal gambar
-        var indeksGambar = 0;
-
-        // Fungsi untuk mengganti gambar
-        function gantiGambar() {
-            // Mengatur sumber gambar baru
-            gambar.src = daftarGambar[indeksGambar];
-
-            // Menambahkan 1 ke indeks gambar
-            indeksGambar++;
-
-            // Jika indeks gambar melebihi jumlah gambar, kembali ke indeks awal
-            if (indeksGambar === daftarGambar.length) {
-                indeksGambar = 0;
-            }
-        }
-
-        // Memanggil fungsi gantiGambar setiap 2 detik
-        setInterval(gantiGambar, 2000);
-        // Fungsi untuk menampilkan alert pesan kesalahan
-        function showErrorAlert(message) {
-            alert(message);
-        }
-    </script>
-</body>
-
-</html>
+    </div>
+</div>
+@endsection

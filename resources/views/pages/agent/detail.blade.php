@@ -1,113 +1,115 @@
-@extends('layout.main')
+@extends('layout.market')
+
+@section('title', 'Profil Agen')
+
+@php
+    $agentUser = $agent->users->first();
+    $agentAreas = $agent->regencies()->pluck('name')->toArray();
+    $dijual = $agent->properties->flatMap->units->flatMap->statuses->where('name', 'Dijual')->count();
+    $disewa = $agent->properties->flatMap->units->flatMap->statuses->where('name', 'Disewa')->count();
+    $waNumber = $agent->telp ? preg_replace('/\D/', '', $agent->telp) : null;
+    if ($waNumber && !str_starts_with($waNumber, '62')) {
+        $waNumber = '62' . ltrim($waNumber, '0');
+    }
+@endphp
 
 @section('content')
-    <!DOCTYPE html>
-    <html lang="en">
+<div class="k-container">
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" />
-        <title></title>
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
-        <!-- CSS -->
-        <link rel="stylesheet" href="/css/agent/detail.css">
-        <script src="/js/agent/detail.js" defer></script>
-    </head>
+    <nav class="k-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ route('beranda') }}">Beranda</a>
+        <span>/</span>
+        <a href="{{ route('agent.search.user') }}">Agen</a>
+        <span>/</span>
+        <span class="is-current">{{ $agentUser?->name ?? 'Agen' }}</span>
+    </nav>
 
-    <body>
-        <div class="header__wrapper2">
-            <div class="img_detailagent"></div>
-            <div class="cols__container">
-                <div class="left__col">
-                    <div class="img__container">
-                        <img src="{{ asset('storage/' . $agent->face) }}" />
-                        <span></span>
-                    </div>
+    <div class="k-detail">
 
-                    <h2>{{ implode(', ',$agent->users()->pluck('name')->toArray()) }}</h2>
-                    <p style="color: #000">{{ implode(', ',$agent->users()->pluck('email')->toArray()) }}</p>
-
-
-                    <ul class="about">
-                        <li><span>{{ $agent->properties->flatMap->units->flatMap->statuses->where('name', 'Dijual')->count() }}</span>
-                            Dijual
-                        </li>
-                        <li><span>{{ $agent->properties->flatMap->units->flatMap->statuses->where('name', 'Disewa')->count() }}</span>
-                            Disewa
-                        </li>
-                        {{-- <li><span>20</span>Klient</li> --}}
-                    </ul>
-
-                    <div class="content">
-                        <p>{{ implode(', ',$agent->regencies()->pluck('name')->toArray()) }}</p>
-                        <p>{{ $agent->address }}</p>
-                        <p>{{$agent->telp}}</p>
-                        <ul class="abc">
-                            <li><i class="fab fa-twitter"></i></li>
-                            <i class="fab fa-instagram"></i>
-                            <i class="fab fa-facebook"></i>
-                            <i class="fab fa-whatsapp"></i>
-                        </ul>
-                    </div>
+        <div>
+            <div class="k-panel" style="display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <img class="k-avatar" style="width: 84px; height: 84px;"
+                     src="{{ $agent->face ? asset('storage/' . $agent->face) : asset('assets/pages/Home/agent1.jpg') }}"
+                     alt="{{ $agentUser?->name ?? 'Agen' }}">
+                <div style="flex: 1; min-width: 220px;">
+                    <h1 style="font-size: 1.5rem; margin-bottom: 0.15rem;">{{ $agentUser?->name ?? 'Agen Eigentum' }}</h1>
+                    <p style="color: var(--muted); margin: 0; font-size: 0.92rem;">
+                        {{ implode(', ', $agentAreas) ?: ($agent->address ?? 'Indonesia') }}
+                    </p>
                 </div>
-                <div class="right__col">
-                    <!-- Images Filter Buttons Section -->
-                    <div class=" row mt-5">
-                        <div class="col-12" id="filter-buttons">
-                            <button class="btn mb-2 me-1 active" data-filter="all">Semuanya</button>
-                            <button class="btn mb-2 mx-1" data-filter="apartemen">Apartemen</button>
-                            <button class="btn mb-2 mx-1" data-filter="rumah">Rumah</button>
-                            <button class="btn mb-2 mx-1" data-filter="ruko">Ruko</button>
-                            <button class="btn mb-2 mx-1" data-filter="villa">Villa</button>
-                        </div>
-                    </div>
-
-                    <!-- <button class="btn-ajukan mb-2 float-end" id="ajukan-button" style="margin-top: -43px; background-color: #0C40E8; color: #fff; cursor: auto;">Ajukan</button> -->
-
-                    <!-- Filterable Images / Cards Section -->
-                    <div class="card-detailagent row px-2 mt-4 gap-3" style="width: 770px; margin-bottom: 60px;"
-                        id="filterable-cards">
-                        @foreach ($agent->properties as $property)
-                            <div class="card p-0" data-name="aktif">
-                                <a href="{{ route('property.show.user', $property->id) }}" class="stretched-link"></a>
-                                <img src="{{ asset('storage/' . $property->image) }}" alt="img" />
-                                <div class="card-body">
-                                    <h6 class="card-title">{{ $property->title }}</h6>
-                                    <h6>
-                                        {{ implode(', ',$property->regencies()->pluck('name')->toArray()) }}
-                                    </h6>
-                                </div>
-                                @if (Auth::user()->role == $property->developers->users->where('role', 'developer')->first())
-                                <div class="labeledit" style="z-index: 100">
-                                    <a class="linkedit" href="{{ route('property.edit.developer', $property->id) }}"><i
-                                            class="fas fa-edit edit-icon"></i></a>
-                                </div>
-                                <div class="labeldelete" style="z-index: 100">
-                                    <form action="{{ route('property.destroy.developer', $property->id) }}" method="post"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="linkdelete"
-                                            onclick="return confirm('Apakah Anda Yakin {{ $property->id }} ')"><i
-                                                class="fas fa-trash delete-icon"></i></button>
-                                        {{-- <a class="linkdelete" href=""><i class="fas fa-trash delete-icon"></i></a> --}}
-                                    </form>
-                                </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
+                @if ($waNumber)
+                    <a class="k-btn k-btn--solid"
+                       href="https://wa.me/{{ $waNumber }}?text={{ urlencode('Halo, saya menemukan profil Anda di Eigentum.') }}"
+                       target="_blank" rel="noopener">
+                        Hubungi
+                    </a>
+                @endif
             </div>
 
-        </div>
+            <div class="k-specs" style="grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 1.5rem;">
+                <div class="k-specs__item">
+                    <b>{{ $dijual }}</b>
+                    <span>Unit dijual</span>
+                </div>
+                <div class="k-specs__item">
+                    <b>{{ $disewa }}</b>
+                    <span>Unit disewa</span>
+                </div>
+                <div class="k-specs__item">
+                    <b>{{ $agent->properties->count() }}</b>
+                    <span>Proyek dikelola</span>
+                </div>
+            </div>
+
+            <section style="padding-block: 0.5rem 1.5rem;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Kontak</h2>
+                <table class="k-table">
+                    <tbody>
+                        @if ($agentUser?->email)
+                            <tr>
+                                <th style="width: 40%;">Email</th>
+                                <td>{{ $agentUser->email }}</td>
+                            </tr>
+                        @endif
+                        @if ($agent->telp)
+                            <tr>
+                                <th>Telepon</th>
+                                <td class="k-mono">{{ $agent->telp }}</td>
+                            </tr>
+                        @endif
+                        @if ($agent->address)
+                            <tr>
+                                <th>Alamat</th>
+                                <td>{{ $agent->address }}</td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            </section>
         </div>
 
-    </body>
-
-    </html>
+        <aside class="k-detail__aside">
+            <div class="k-panel">
+                <h2 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Proyek dikelola</h2>
+                @forelse ($agent->properties as $property)
+                    <a href="{{ route('property.show.user', $property->id) }}"
+                       style="display: flex; gap: 0.75rem; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--line);">
+                        <img src="{{ $property->image ? asset('storage/' . $property->image) : asset('assets/pages/Home/unit1.jpg') }}"
+                             alt="" style="width: 56px; height: 44px; object-fit: cover; border-radius: 8px;">
+                        <div style="min-width: 0;">
+                            <div style="font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ $property->title }}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--muted);">
+                                {{ implode(', ', $property->regencies()->pluck('name')->toArray()) ?: 'Indonesia' }}
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <p style="color: var(--muted); font-size: 0.9rem; margin: 0;">Belum ada proyek.</p>
+                @endforelse
+            </div>
+        </aside>
+    </div>
+</div>
 @endsection

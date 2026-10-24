@@ -1,81 +1,64 @@
-@extends('layout.main')
+@extends('layout.market')
+
+@section('title', 'Simulasi KPR')
 
 @section('content')
-    <!DOCTYPE html>
-    <html lang="en">
+<div class="k-container" style="padding-block: var(--s-5) var(--s-7);">
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-            integrity="sha512-HM/HrlGg/OUdNf9yjUVHc7L8Y1ICJf7gZkPwZb5M5J5D5X1Q2e5C5n7Qmbt3DqV7kACtIwPLIXfJ8GLzaILoXw=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <title>Eigentum</title>
-        <link rel="stylesheet" href="/css/pages/kpr.css">
-    </head>
+    <nav class="k-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ route('beranda') }}">Beranda</a>
+        <span>/</span>
+        <span class="is-current">Simulasi KPR</span>
+    </nav>
 
-    <body>
-        <div class="loan-calculator" style="margin-top: 90px;">
-            <div class="top">
-                <h2 style="color: #fff">Simulasi Kalkulator KPR</h2>
+    <div class="k-sec-head">
+        <h1 style="font-size: clamp(1.5rem, 3.5vw, 2.2rem);">Simulasi Kalkulator KPR</h1>
+        <span class="k-catalog__count">estimasi — bukan penawaran resmi</span>
+    </div>
 
-                <form action="#">
-                    <div class="group">
-                        <div class="title">Pinjaman</div>
-                        <input type="text" value="30.000.00" class="loan-amount" />
-                    </div>
+    <div class="k-detail">
 
-                    <div class="group">
-                        <div class="title">Tingkat Bunga / %</div>
-                        <input type="text" value="8.5" class="interest-rate" />
-                    </div>
-
-                    <div class="group">
-                        <div class="title">Waktu/bulan</div>
-                        <input type="text" value="12" class="loan-tenure" />
-                    </div>
-                </form>
-            </div>
-
-            <div class="result">
-                <div class="left">
-                    <div class="loan-emi">
-                        <h3>Cicilan/bulan</h3>
-                        <div class="value">123</div>
-                    </div>
-
-                    <div class="total-interest">
-                        <h3>Bunga Yang Dibayar</h3>
-                        <div class="value">1234</div>
-                    </div>
-
-                    <div class="total-amount">
-                        <h3>Total Jumlah</h3>
-                        <div class="value">12345</div>
-                    </div>
-
-                    <button class="calculate-btn">Calculate</button>
+        <div>
+            <form class="k-panel" action="#" onsubmit="return false;" style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="k-field" style="margin: 0;">
+                    <label class="k-label" for="kpr-amount">Pinjaman (Rp)</label>
+                    <input class="k-input loan-amount" id="kpr-amount" type="text" value="300.000.000">
                 </div>
-
-                <div class="right">
-                    <canvas id="myChart" width="200" height="200"></canvas>
+                <div class="k-field" style="margin: 0;">
+                    <label class="k-label" for="kpr-rate">Tingkat bunga / %</label>
+                    <input class="k-input interest-rate" id="kpr-rate" type="text" value="8.5">
                 </div>
-            </div>
+                <div class="k-field" style="margin: 0;">
+                    <label class="k-label" for="kpr-tenure">Waktu (bulan)</label>
+                    <input class="k-input loan-tenure" id="kpr-tenure" type="text" value="120">
+                </div>
+                <button type="button" class="k-btn k-btn--solid k-btn--lg calculate-btn">Hitung</button>
+            </form>
+
+            <div id="overlay" style="display:none"></div>
+            <div id="alertBox" style="display:none"></div>
         </div>
 
+        <aside class="k-detail__aside">
+            <div class="k-panel k-panel--price">
+                <div class="loan-emi" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);">Cicilan / bulan</h3>
+                    <div class="value k-mono" style="font-size: 1.6rem; font-weight: 600; color: var(--green-ink);">—</div>
+                </div>
+                <div class="total-interest" style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);">Bunga yang dibayar</h3>
+                    <div class="value k-mono" style="font-size: 1.2rem; font-weight: 600;">—</div>
+                </div>
+                <div class="total-amount" style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 0.8rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);">Total jumlah</h3>
+                    <div class="value k-mono" style="font-size: 1.2rem; font-weight: 600;">—</div>
+                </div>
+                <canvas id="myChart" width="200" height="200"></canvas>
+            </div>
+        </aside>
+    </div>
+</div>
 
-
-
-
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
-
-        <script src="/js/pages/kpr.js"></script>
-    </body>
-
-    </html>
-
-    !
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js"></script>
+<script src="/js/pages/kpr.js"></script>
 @endsection

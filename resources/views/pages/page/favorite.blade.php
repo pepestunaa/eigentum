@@ -1,187 +1,36 @@
-@extends('layout.main')
+@extends('layout.market')
+
+@section('title', 'Favorit')
 
 @section('content')
+<div class="k-container">
 
+    <nav class="k-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ route('beranda') }}">Beranda</a>
+        <span>/</span>
+        <span class="is-current">Favorit</span>
+    </nav>
 
-<!DOCTYPE html>
-<html class="no-js" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
-    <meta name="LIHATport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="images/favicon.png" rel="shortcut icon">
-
-    <!--====== Google Font ======-->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
-
-    <!--====== Vendor Css ======-->
-    <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/vendor.css') }}">
-
-    <!--====== Utility-Spacing ======-->
-    <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/utility.css') }}">
-
-    <!--====== App ======-->
-    <link rel="stylesheet" href="{{ asset('css/Lib/fix/css/app.css') }}">
-</head>
-<body class="config">
-    
-    <div id="app">
-
-
-        <!--====== App Content ======-->
-        <div class="app-content">
-
-            <!--====== Section 1 ======-->
-            <div class="u-s-p-t-100">
-
-                <!--====== Section Content ======-->
-                <div class="section__content">
-                    <div class="container">
-                        <div class="breadcrumb">
-                            <div class="breadcrumb__wrap">
-                                <ul class="breadcrumb__list">
-                                    <li class="has-separator">
-
-                                        <a href="/">Home</a></li>
-                                    <li class="is-marked">
-
-                                        <a href="wishlist.html">Favorit</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--====== End - Section 1 ======-->
-
-
-            <!--====== Section 2 ======-->
-            <div class="u-s-p-y-60">
-
-                <!--====== Section Intro ======-->
-                <div class="section__intro u-s-m-b-60">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="section__text-wrap">
-                                    <h1 class="section__heading u-c-secondary">Favorit</h1>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--====== End - Section Intro ======-->
-
-
-                <!--====== Section Content ======-->
-                <div class="section__content">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-
-                            <!--====== Wishlist Product ======-->
-                            @foreach ($favorites as $unit)
-                                <div class="w-r u-s-m-b-30">
-                                    <div class="w-r__container">
-                                        <div class="w-r__wrap-1">
-                                            <div class="w-r__img-wrap">
-                                                <img class="u-img-fluid" src="{{ asset('storage/' . $unit->image) }}" style="width: 120px; height:120px;" alt=""></div>
-                                            <div class="w-r__info">
-
-                                                <span class="w-r__name">
-                                                    <a href="product-detail.html">{{ $unit->title }}</a></span>
-                                                <span class="w-r__category">
-                                                    <a href="shop-side-version-2.html">{{ $unit->properties->types->name }}</a></span>
-                                                    
-                                                <span class="w-r__price">
-                                                    {{ $unit->price }}
-                                                </span></div>
-                                            </div>
-                                        <div class="w-r__wrap-2">
-
-                                            
-
-                                            <a class="w-r__link btn--e-transparent-platinum-b-2" href="{{route('unit.show.user', $unit->id)}}">LIHAT</a>
-
-                                            <form action="{{ route('favorite.remove', $unit->id) }}" method="post" class="d-inline">@csrf
-                                                <a class="w-r__link btn--e-transparent-platinum-b-10" href="#" onclick="event.preventDefault(); this.closest('form').submit();">HAPUS</a>
-                                            </form></div>
-                                    </div>
-                                </div>
-                            @endforeach
-
-
-
-                                
-
-                                <!--====== End - Wishlist Product ======-->
-
-                            </div>
-                            <div class="col-lg-12" style="justify-content: center; align-items: center; display: flex; margin-bottom: 140px; ">
-                                <div class="route-box">
-                                    <div class="route-box__g">
-
-                                        <form action="{{ route('favorite.removeall') }}" method="post">@csrf
-                                            <a class="route-box__link" href="#" onclick="event.preventDefault(); this.closest('form').submit();"><i class="fas fa-trash" style="margin-right: 10px;"></i>
-
-                                            <span>CLEAR WISHLIST</span></a>
-                                        </form></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--====== End - Section Content ======-->
-            </div>
-            <!--====== End - Section 2 ======-->
-        </div>
-        <!--====== End - App Content ======-->
-
-
+    <div class="k-sec-head">
+        <h1 style="font-size: clamp(1.5rem, 3.5vw, 2.2rem);">Favorit saya</h1>
+        <span class="k-catalog__count">{{ $favorites->count() }} unit tersimpan</span>
     </div>
-    <!--====== End - Main App ======-->
 
-
-    <!--====== Google Analytics: change UA-XXXXX-Y to be your site's ID ======-->
-    <script>
-        window.ga = function() {
-            ga.q.push(arguments)
-        };
-        ga.q = [];
-        ga.l = +new Date;
-        ga('create', 'UA-XXXXX-Y', 'auto');
-        ga('send', 'pageLIHAT')
-    </script>
-    <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-
-    <!--====== Vendor Js ======-->
-    <script src="{{ asset('css/Lib/fix/js/vendor.js') }}"></script>
-
-    <!--====== jQuery Shopnav plugin ======-->
-    <script src="{{ asset('css/Lib/fix/js/jquery.shopnav.js') }}"></script>
-
-    <!--====== App ======-->
-    <script src="{{ asset('css/Lib/fix/js/app.js') }}"></script>
-
-    <!--====== Noscript ======-->
-    <noscript>
-        <div class="app-setting">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="app-setting__wrap">
-                            <h1 class="app-setting__h1">JavaScript dinonaktifkan di browser Anda.</h1>
-
-                            <span class="app-setting__text">Aktifkan JavaScript di browser Anda atau tingkatkan ke browser yang mendukung JavaScript.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    @if ($favorites->count())
+        <div class="k-grid" style="padding-bottom: var(--s-7);">
+            @foreach ($favorites as $unit)
+                @include('layout.partial.card-unit', ['unit' => $unit, 'isFav' => true])
+            @endforeach
         </div>
-    </noscript>
-</body>
-</html>
-
+    @else
+        <div class="k-empty" style="margin-bottom: var(--s-7);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09A5.99 5.99 0 0 1 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35Z"/>
+            </svg>
+            <h3>Belum ada favorit</h3>
+            <p>Simpan properti yang menarik dengan menekan ikon hati, lalu bandingkan di sini.</p>
+            <a class="k-btn k-btn--solid" href="{{ route('unit.search.user') }}" style="margin-top: 1rem;">Jelajahi properti</a>
+        </div>
+    @endif
+</div>
 @endsection
