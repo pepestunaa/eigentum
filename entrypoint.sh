@@ -7,7 +7,8 @@ fi
 
 composer install --no-interaction
 
-npm install
+# stylex plugin's peer range predates the installed stylex version
+npm install --legacy-peer-deps
 
 # Generate key jika kosong
 if ! grep -q "^APP_KEY=base64:" .env; then
