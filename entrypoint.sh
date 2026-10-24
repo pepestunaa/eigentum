@@ -5,10 +5,13 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
-composer install --no-interaction
+if [ ! -f vendor/autoload.php ]; then
+    composer install --no-interaction
+fi
 
-# stylex plugin's peer range predates the installed stylex version
-npm install --legacy-peer-deps
+if [ ! -d node_modules ]; then
+    npm install --legacy-peer-deps
+fi
 
 # Generate key jika kosong
 if ! grep -q "^APP_KEY=base64:" .env; then
@@ -29,7 +32,7 @@ until php artisan migrate --force; do
     sleep 5
 done
 
-# Seed hanya saat database masih kosong (boot pertama)
+# Seed hanya saat database masih kosong (boot pertama)  
 USER_COUNT=$(php artisan tinker --execute='echo \Illuminate\Support\Facades\DB::table("users")->count();' 2>/dev/null | tail -n 1)
 if [ "$USER_COUNT" = "0" ]; then
     php artisan db:seed --force
@@ -37,6 +40,6 @@ fi
 
 php artisan storage:link
 
-npm run dev &
+npm run build &
 
 exec php artisan serve --host=0.0.0.0 --port=8000

@@ -38,7 +38,7 @@
             <svg class="k-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/>
             </svg>
-            {{ $unit->properties->regencies->name ?? $unit->properties->address ?? $unit->properties->title ?? 'Indonesia' }}
+            {{ $unit->properties->regencies?->name ?? $unit->properties->address ?? $unit->properties->title ?? 'Indonesia' }}
         </span>
         <div class="k-card__specs">
             @if ($spec?->bedroom)<span>{{ $spec->bedroom }} Kamar</span>@endif
