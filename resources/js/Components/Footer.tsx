@@ -2,32 +2,50 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 
 export default function Footer() {
-  return (
-    <footer style={{ 
-      backgroundColor: 'var(--color-bg-secondary)', 
-      borderTop: '1px solid var(--color-border-subtle)',
-      padding: '80px 24px',
-      marginTop: '100px'
-    }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', fontWeight: 300, color: 'var(--color-text-primary)', letterSpacing: '0.05em' }}>
-          EIGENTUM
-        </h2>
-        <p style={{ color: 'var(--color-text-secondary)', maxWidth: '400px', fontStyle: 'italic' }}>
-          Platform pencarian properti premium di Indonesia dengan standar kelas dunia.
-        </p>
-        
-        <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '16px' }}>
-          <Link href="/about" style={{ color: 'var(--color-text-secondary)' }}>Tentang Kami</Link>
-          <Link href="/pages/sell" style={{ color: 'var(--color-text-secondary)' }}>Jual Properti</Link>
-          <Link href="/pages/rent" style={{ color: 'var(--color-text-secondary)' }}>Sewa Properti</Link>
-          <Link href="/pages/kpr" style={{ color: 'var(--color-text-secondary)' }}>KPR</Link>
-        </div>
-        
-        <div style={{ marginTop: '48px', color: 'rgba(255, 255, 255, 0.3)', fontSize: '0.875rem' }}>
-          © 2026 Eigentum. All rights reserved.
-        </div>
-      </div>
-    </footer>
-  );
+    return (
+        <footer className="k-footer">
+            <div className="k-container">
+                <div className="k-footer__grid">
+                    <div>
+                        <div className="k-footer__brand">
+                            <span className="k-footer__brand-mark">E</span>
+                            Eigentum
+                        </div>
+                        <p>Marketplace properti yang menghubungkan pembeli, penyewa, dan agen dengan developer terverifikasi di seluruh Indonesia.</p>
+                    </div>
+                    <div>
+                        <h4>Jelajahi</h4>
+                        <ul>
+                            <li><Link href="/pages/unit/search">Semua Properti</Link></li>
+                            <li><Link href="/pages/rent">Disewakan</Link></li>
+                            <li><Link href="/pages/sell">Jual Properti</Link></li>
+                            <li><Link href="/pages/newProperty">Properti Baru</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Layanan</h4>
+                        <ul>
+                            <li><Link href="/pages/agent">Cari Agen</Link></li>
+                            <li><Link href="/pages/kpr">Simulasi KPR</Link></li>
+                            <li><Link href="/pages/langganan">Langganan</Link></li>
+                            <li><Link href="/pages/guide">Panduan</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Akun</h4>
+                        <ul>
+                            <li><Link href="/session/auth/user/signin">Masuk</Link></li>
+                            <li><Link href="/session/auth/user/signup">Daftar</Link></li>
+                            <li><Link href="/pages/profile">Profil Saya</Link></li>
+                            <li><Link href="/favorite">Favorit</Link></li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="k-footer__base">
+                    <span>© {new Date().getFullYear()} Eigentum. Semua hak dilindungi.</span>
+                    <span className="k-mono">ID · IDR</span>
+                </div>
+            </div>
+        </footer>
+    );
 }

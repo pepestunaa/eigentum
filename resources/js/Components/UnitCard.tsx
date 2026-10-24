@@ -1,63 +1,49 @@
-/* Hallmark · genre: editorial · macrostructure: 08-photographic · feature: F6 Product card grid */
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { VStack, HStack } from '@astryxdesign/core/Stack';
-import { Text } from '@astryxdesign/core/Text';
-import { AspectRatio } from '@astryxdesign/core/AspectRatio';
 import { formatPrice } from '@/Helpers/formatPrice';
 import type { Unit } from '@/types';
 
-interface UnitCardProps {
-  unit: Unit;
+const spec = (u: Unit, key: string) => u.specifications?.[key as keyof NonNullable<Unit['specifications']>];
+
+export function favUnit(unitId: number, active: boolean) {
+    fetch(active ? `/favorite-remove/${unitId}` : `/favorite-add/${unitId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    }).catch(() => { window.location.href = '/session/auth/user/signin'; });
 }
 
-export default function UnitCard({ unit }: UnitCardProps) {
-  return (
-    <Link href={`/pages/unit/${unit.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-      <VStack gap="var(--spacing-3)" style={{ position: 'relative' }}>
-        <AspectRatio ratio="4/3" style={{ backgroundColor: 'var(--color-background-surface)', overflow: 'hidden' }}>
-          <img
-            src={unit.image ? `/storage/${unit.image}` : '/assets/pages/banner/home2.jpg'}
-            alt={unit.title}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-              transition: 'transform 0.4s ease-out',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          />
-        </AspectRatio>
+export default function UnitCard({ unit }: { unit: Unit }) {
+    const image = unit.image ? `/storage/${unit.image}` : '/assets/pages/Home/unit1.jpg';
+    const address = unit.properties?.address ?? unit.properties?.title ?? 'Indonesia';
 
-        <VStack gap="var(--spacing-1)">
-          <HStack justify="space-between" align="center">
-            <Text size="small" color="secondary" style={{ fontFamily: 'var(--font-mono, monospace)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {unit.properties?.types?.name || 'Unit'}
-            </Text>
-            <Text size="small" style={{ fontFamily: 'var(--font-mono, monospace)' }}>
-              {formatPrice(unit.price)}
-            </Text>
-          </HStack>
-          
-          <Text size="large" style={{ fontFamily: 'var(--font-display, serif)', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {unit.title}
-          </Text>
-
-          <HStack gap="var(--spacing-3)" style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-            {unit.specifications?.bedroom && (
-              <Text size="small" color="secondary">{unit.specifications.bedroom} Bed</Text>
-            )}
-            {unit.specifications?.bathroom && (
-              <Text size="small" color="secondary">{unit.specifications.bathroom} Bath</Text>
-            )}
-            {unit.specifications?.building_area && (
-              <Text size="small" color="secondary">{unit.specifications.building_area}m²</Text>
-            )}
-          </HStack>
-        </VStack>
-      </VStack>
-    </Link>
-  );
+    return (
+        <article className="k-card">
+            <Link href={`/pages/unit/${unit.id}`} className="k-card__media" aria-label={unit.title}>
+                <img src={image} alt={unit.title} loading="lazy" />
+                <div className="k-card__media-tags">
+                    <span className="k-lot">KVL-{String(unit.id).padStart(4, '0')}</span>
+                    {spec(unit, 'bedroom') && <span className="k-badge k-badge--soft">{spec(unit, 'bedroom')} KT</span>}
+                </div>
+            </Link>
+            <div className="k-card__body">
+                <span className="k-card__price">{formatPrice(unit.price)}</span>
+                <Link href={`/pages/unit/${unit.id}`} className="k-card__title">{unit.title}</Link>
+                <span className="k-card__loc">
+                    <svg className="k-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z" />
+                        <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                    {address}
+                </span>
+                <div className="k-card__specs">
+                    {spec(unit, 'bedroom') && <span>{spec(unit, 'bedroom')} Kamar</span>}
+                    {spec(unit, 'bathroom') && <span>{spec(unit, 'bathroom')} Mandi</span>}
+                    {spec(unit, 'building_area') && <span>{spec(unit, 'building_area')} m²</span>}
+                </div>
+            </div>
+        </article>
+    );
 }
