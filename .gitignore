@@ -34,3 +34,8 @@ AGENTS.md
 CLAUDE.md
 skills-lock.json
 host_err.html
+
+# stray tooling dumps that leaked into the repo once already
+/objects.txt
+/*objects.txt
+/*push.log
