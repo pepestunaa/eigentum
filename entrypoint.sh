@@ -40,6 +40,8 @@ fi
 
 php artisan storage:link
 
+rm -f public/hot
+
 npm run build &
 
 exec php artisan serve --host=0.0.0.0 --port=8000
